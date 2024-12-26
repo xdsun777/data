@@ -40,6 +40,7 @@ def all_data_write_sql(all_data):
 
 
 # 读取excel文件的数据
+# noinspection PyStatementEffect
 def get_data(file_list: list):
     app = xw.App(visible=False, add_book=False)
     app.display_alerts = False
@@ -49,6 +50,7 @@ def get_data(file_list: list):
         wb = app.books.open(f)
         wb.activate()
         sht = wb.sheets(1)
+        # noinspection PyStatementEffect
         sht.activate
 
         if not f[4] or type(f[4]) == 'NoneType':

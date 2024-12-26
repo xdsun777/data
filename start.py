@@ -23,6 +23,7 @@ def get_place(phone):
 
 
 # 读取excel文件的数据
+# noinspection PyStatementEffect
 def get_data(file_list: list):
     app = xw.App(visible=False, add_book=False)
     app.display_alerts = False

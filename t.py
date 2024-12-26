@@ -1,6 +1,6 @@
 # rs = requests.get('https://cx.shouji.360.cn/phonearea.php?number=18942955144')
 #
-# d = rs.json().get('daata')
+# d = rs.json().get('data')
 # try:
 #     place = d.get('province') + d.get('city')
 # except AttributeError:

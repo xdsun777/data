@@ -1,4 +1,7 @@
-import sqlite3,sys,time,os,re
+import re
+import sqlite3
+import time
+
 import xlwings as xw
 
 # 根据uid查询，去重
@@ -45,7 +48,7 @@ def saveResult(data):
         sht_info = sht.used_range
         insert_site = "A" + str(sht_info.last_cell.row + 1)
         print(insert_site)
-        i.pop(0)
+        # i.pop(0)
         sht.range(insert_site).options(expand='down').value = i
         head = ["序号", "主播昵称", "时间", "用户昵称", "动作", "内容", "Uid", "抖音号", "性别", "地区", "简介", "等级",
                 "粉丝", "关注", "精准", "Secid", "qurl", "私密", "蓝V", "作品链接", "创建时间","省份"]
@@ -55,4 +58,5 @@ def saveResult(data):
     result_wb.close()
     result_app.quit()
 
-saveResult(read_sql())
+# saveResult(read_sql())
+print(read_sql())
