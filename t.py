@@ -8,6 +8,7 @@
 #
 # print(d)
 # print(place)
+import requests
 
 # rs = requests.get("https://config.net.cn/tools/ProvinceCityCountry.html")
 # rs.encoding = rs.apparent_encoding
