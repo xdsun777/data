@@ -122,7 +122,6 @@ def data_handle(origin_data):
 
 if __name__ == '__main__':
     arg = sys.argv
-
     if len(arg) == 2:
         # 传入需要处理的excel文件所在目录，进行批量处理
         file_path = []
