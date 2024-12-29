@@ -423,3 +423,6 @@ for i in a:
 l = '1(10002)'
 m = ',18942955144'
 print("10002" in l or "10005" in l)
+TEST_EXCEL_DIR = "C:\\Users\\ly\\Desktop\\work\\temp"
+
+

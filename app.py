@@ -2,9 +2,6 @@
 import os.path
 import xlwings as xw
 
-
-TEST_EXCEL_DIR = "C:\\Users\\ly\\Desktop\\work\\temp"
-
 # TODO get_excel_file_path_list
 def get_excel_files_list(excel_file_dir_path="C:\\Users\ly\Desktop\work\handle"):
     if os.path.isdir(excel_file_dir_path):
@@ -53,7 +50,7 @@ def data_handle(handle):
     return
 
 # TODO 获取数据 返回数据
-@data_handle
+# @data_handle
 def get_datas():
     return read_excel(get_excel_files_list(excel_file_dir_path=TEST_EXCEL_DIR))
 
