@@ -62,22 +62,19 @@ class Write:
 		self.sheet = self.wb.active
 
 
-	def table_head_handle(self):
-		pass
-
 	def write_table_all_data(self):
+		self.sheet.append(self.filed)
 		for data_list in self.data:
 			for i in data_list:
 				self.sheet.append(i)
 
 		self.wb.save(self.save_file_name)
-		pass
 
 
 if __name__ == '__main__':
 
-	# e = Read('test_data/1228家美扫天下粉丝关注数据.xlsx')
-	e = Read('test_data')
+	e = Read('test_data/1228家美扫天下粉丝关注数据.xlsx')
+	# e = Read('test_data')
 	s_d = e.get_all_data()
 	# print(s_d)
 	a = Write(excel_file_name="test.xlsx",data=s_d,filed=('编号', '昵称', 'UID', '简介', 'SECUID', '抖音号', '精准', '蓝V认证', '粉丝数'))
