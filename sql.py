@@ -41,11 +41,11 @@ class Insert(Sql):
 		else:
 			self.data = None
 
-	def insert_live_data(self):
+	def insert_dy_live_data(self):
 		for i in self.data:
-			if type(i) == tuple:
+			if type(i) == list:
 				self.cursor.execute(
-					"INSERT INTO zhibo (编号,用户昵称,勋章等级,动作,抖音号,sec_uid,uid,简介,粉丝,关注,性别,地区,精准,时间,省份,创建时间,主播昵称) VALUES (?, ?, ?,?, ?, ?,?, ?, ?,?, ?, ?,?, ?, ?,?, ?)",
+					"INSERT INTO zhibo (编号,用户昵称,勋章等级,动作,抖音号,sec_uid,uid,简介,粉丝,关注,性别,地区,精准,时间,创建时间,主播昵称,省份) VALUES (?, ?, ?,?, ?, ?,?, ?, ?,?, ?, ?,?, ?, ?,?, ?)",
 					(i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], i[11], i[12], i[13], i[14],
 					 i[15], i[16]))
 

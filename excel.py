@@ -44,7 +44,7 @@ class Read:
 class Write:
 	def __init__(self, excel_file_name:str=None, filed:list=None,data:list=None):
 		if type(data) is list:
-			self.data = data
+			self._data = data
 			# print(self.data)
 		else:
 			print("无效数据")
@@ -63,21 +63,28 @@ class Write:
 
 		self.wb = Workbook()
 		self.sheet = self.wb.active
+		# self.sheet = self.wb.create_sheet("test")
 
 
 	def write_table_all_data(self):
-		self.sheet.append(self.filed)
-		for data_list in self.data:
+		s_set = set([i[-1] for i in self._data])
+		sht_list = [self.wb.create_sheet(x) for x in s_set]
+		list_set_dict = dict(zip(s_set, sht_list))
+		for s in list_set_dict:
+			self.sheet = list_set_dict[s]
+			self.sheet.append(self.filed)
+		for data_list in self._data:
+			self.sheet = list_set_dict[data_list[-1]]
 			self.sheet.append(data_list)
 		self.wb.save(self.save_file_name)
 
 
 if __name__ == '__main__':
-	# from sql import Sql, GET_ZhiBo_ALL_DATA, Select
+	from sql import Sql, GET_ZhiBo_ALL_DATA, Select
 	# 读和写都 需要 传入或传出 双层list
-	e = Read('test_data/直播间采集.xlsx')
-	# e = Read('test_data')
-	s_d = e.get_all_data()
+	s = Select(sql_code=GET_ZhiBo_ALL_DATA)
+	s_d = s.get_all_data()
+	del s
 	# print(s_d)
-	w = Write(filed=FILED_ZhiBo,data=s_d)
+	w = Write(excel_file_name="test.xlsx",filed=FILED_ZhiBo,data=s_d)
 	w.write_table_all_data()
