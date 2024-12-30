@@ -24,7 +24,7 @@ def regexp(expr, item):
     return reg.search(item) is not None
 
 
-def read_sql(db_name='C:\\Users\ly\Desktop\data\_data\douyin.db', sql_=sql__all):
+def read_sql(db_name='./_data/douyin.db', sql_=sql__all):
     conn = sqlite3.connect(db_name)
     conn.create_function('REGEXP', 2, regexp)
     cursor = conn.cursor()

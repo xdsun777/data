@@ -1,25 +1,95 @@
-from time import sleep
+from temp_data import city_data
+import requests,time
 
 
 class DataHandle:
 	def __init__(self,origin_data):
-		if type(origin_data) is list:
+		if type(origin_data) is list and type(origin_data[0]) is list:
 			self._data = origin_data
+		else:
+			print("数据必须是二维list类型")
+			exit(-1)
 		self._final_data = None
 		self._temp_data = None
+		self.table_head_data = None
 
-	def remove_head(self):
-		for table in self._data:
-			table.pop(0)
-			for tuple_data in table:
-				print(tuple_data)
+	# 获取手机号归属地
+	def get_place(self,phone):
+		url = 'https://cx.shouji.360.cn/phonearea.php?number=18942955144' + phone
+		rs = requests.get(url)
+		d = rs.json().get('data')
+		try:
+			# return 市
+			return d.get('city')
+		except AttributeError:
+			print("data没有city属性，返回空")
+			return None
 
-	def final_data(self):
-		d = self._data
-		return d
+	# 市县区 转 省
+	def qx_to_s(self,qx):
+		for s in city_data:
+			if qx is not None and type(qx) != 'NoneType':
+				h = qx + "市"
+				x = qx + "县"
+				z = qx + "镇"
+				if qx in city_data[s] or h in city_data[s] or x in city_data[s] or z in city_data[s]:
+					return s
+		# print("未找到该地区所在省份")
+		return None
+
+	def handle_zhibo(self):
+	# 42(10002),修油缸气缸,7,进入直播间,2027451038,MS4wLjABAAAAlC5jq0Db2nz58qZdzVs1DHCDXK6 - bbIpf - RL5KPfZ7Q,98425843564,修油缸气缸18852041880,771,484,男 ,18852041880,2024 - 12 - 2814: 51:33
+	# src 编号 用户昵称 勋章等级 动作 抖音号 sec_uid uid 简介 粉丝 关注 性别 地区 精准 时间
+	# dct 编号 用户昵称 勋章等级 动作 抖音号 sec_uid uid 简介 粉丝 关注 性别 地区 精准 时间 省份 创建时间 主播昵称
+		all_data: list = []
+		for f in self._data:
+			# TODO 数据处理部分
+			# 新增 省份 创建时间 主播昵称
+			# 过滤查询手机号归属地，并设置
+			if f[12] is not None:
+				if ',' in f[12]:
+					f[12] = f[12].removeprefix(',')
+				if f[11] is None:
+					f[11] = self.get_place(f[12])
+					print(f[11])
+
+				s_result = self.qx_to_s(f[11])
+				# 处理用户主页sec——uid
+				f[5] = "https://www.douyin.com/user/" + f[5]
+
+				# 省份
+				if s_result is None:
+					f.append("其他地区")
+				else:
+					f.append(s_result)
+				# 创建时间
+				f.append(time.time())
+				# 主播昵称
+				if "10002" in f[0] or "10005" in f[0]:
+					f.append("猎鹰蒸汽喷抽清洗机厂家")
+				if "10008" in f[0]:
+					f.append("陕西绿霸高压清洗机")
+				if "10011" in f[0]:
+					f.append("巴诺德清洗机")
+				if "10014" in f[0]:
+					f.append("黑猫精英高压商用洗车机")
+				if "10017" in f[0]:
+					f.append("奔启洗车机—工厂")
+				if "10020" in f[0]:
+					f.append("KARCHER卡赫汽车用品旗舰店")
+
+			all_data.append(f)
+		print(all_data)
+		return all_data
+
+
+
+
+
+
 
 import excel
-read_data = excel.Read("./test_data")
+read_data = excel.Read("test_data/直播间采集.xlsx")
 data = read_data.get_all_data()
 d = DataHandle(origin_data=data)
-d.remove_head()
+d.handle_zhibo()

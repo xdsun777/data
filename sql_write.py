@@ -1,6 +1,5 @@
 import sqlite3, sys, os, time,requests
 from typing import Any
-
 import xlwings as xw
 from temp_data import city_data
 

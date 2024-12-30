@@ -1,8 +1,9 @@
 from openpyxl import Workbook, load_workbook
+# import itertools
 import os.path
 import time
 
-
+FILED_ZhiBo =['id','主播昵称','时间', '用户昵称',  '简介','精准',  '动作','uid','sec_uid', '抖音号', '性别', '地区','勋章等级','粉丝', '关注', '创建时间','省份']
 
 class Read:
 	def __init__(self, excel_path: str):
@@ -25,7 +26,9 @@ class Read:
 	def get_all_data(self) -> list[list]:
 		if self.wb is not None:
 			sheet = self.wb.active
-			return [[row for row in sheet.iter_rows(values_only=True)]]
+			temp = [list(row) for row in sheet.iter_rows(values_only=True)]
+			temp.pop(0)
+			return temp
 		else:
 			return self.get_multi_file_all_data()
 
@@ -34,12 +37,12 @@ class Read:
 		for f in self.excel_files_path_list:
 			f = os.path.join(os.path.join(self.excel_files_dir_path, f))
 			self.wb = load_workbook(f)
-			all_data +=self.get_all_data()
+			all_data += self.get_all_data()
+		# return list(itertools.chain.from_iterable(all_data))
 		return all_data
 
-
 class Write:
-	def __init__(self, excel_file_name=None, filed=None,data=None):
+	def __init__(self, excel_file_name:str=None, filed:list=None,data:list=None):
 		if type(data) is list:
 			self.data = data
 			# print(self.data)
@@ -65,17 +68,16 @@ class Write:
 	def write_table_all_data(self):
 		self.sheet.append(self.filed)
 		for data_list in self.data:
-			for i in data_list:
-				self.sheet.append(i)
-
+			self.sheet.append(data_list)
 		self.wb.save(self.save_file_name)
 
 
 if __name__ == '__main__':
-
-	e = Read('test_data/1228家美扫天下粉丝关注数据.xlsx')
+	# from sql import Sql, GET_ZhiBo_ALL_DATA, Select
+	# 读和写都 需要 传入或传出 双层list
+	e = Read('test_data/直播间采集.xlsx')
 	# e = Read('test_data')
 	s_d = e.get_all_data()
 	# print(s_d)
-	a = Write(excel_file_name="test.xlsx",data=s_d,filed=('编号', '昵称', 'UID', '简介', 'SECUID', '抖音号', '精准', '蓝V认证', '粉丝数'))
-	a.write_table_all_data()
+	w = Write(filed=FILED_ZhiBo,data=s_d)
+	w.write_table_all_data()
