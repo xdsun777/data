@@ -87,7 +87,7 @@ class DataHandle:
 
 
 # 抖音一条龙
-def dy_live(file="./test.xlsx"):
+def dy_live(file_dir="./test.xlsx"):
 	read_data = excel.Read(file)
 	dh = DataHandle(origin_data=read_data.get_all_data())
 	i=sql.Insert(insert_data=dh.handle_zhibo())
@@ -100,13 +100,8 @@ def dy_live(file="./test.xlsx"):
 	w.write_table_all_data()
 
 
-
-
-
-
-
 if __name__ == '__main__':
 	start = time.time()
-	dy_live(file="C:\\Users\\ly\\Desktop\\work\\source\\ly直播采集")
+	dy_live(file_dir="C:\\Users\\ly\\Desktop\\work\\source\\ly直播采集")
 
 	print(time.time()-start)
