@@ -1,8 +1,7 @@
-from excel import FILED_ZhiBo
-from sql import GET_ZhiBo_ALL_DATA
+from excel import *
+from sql import *
 from temp_data import city_data
 import requests,time
-import excel,sql
 
 
 class DataHandle:
@@ -86,6 +85,14 @@ class DataHandle:
 
 
 
+
+
+
+
+
+
+
+
 # 抖音一条龙
 def dy_live(file_dir="./test.xlsx"):
 	read_data = excel.Read(file_dir)
@@ -102,6 +109,6 @@ def dy_live(file_dir="./test.xlsx"):
 
 if __name__ == '__main__':
 	start = time.time()
-	dy_live(file_dir="C:\\Users\\ly\\Desktop\\work\\source\\ly直播采集")
+	# dy_live(file_dir="C:\\Users\\ly\\Desktop\\work\\source\\ly直播采集")
 
 	print(time.time()-start)
