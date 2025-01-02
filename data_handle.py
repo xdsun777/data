@@ -1,4 +1,3 @@
-from old.start import data_handle
 from temp_data import city_data
 import requests,time
 from excel import *
@@ -49,7 +48,9 @@ class DataHandle:
     def handle_zhibo(self):
         """src: 编号 用户昵称 勋章等级 动作 抖音号 sec_uid uid 简介 粉丝 关注 性别 地区 精准 时间
             dct: 编号 用户昵称 勋章等级 动作 抖音号 sec_uid uid 简介 粉丝 关注 性别 地区 精准 时间 创建时间 主播昵称 省份
-            42(10002),修油缸气缸,7,进入直播间,2027451038,MS4wLjABAAAAlC5jq0Db2nz58qZdzVs1DHCDXK6 - bbIpf - RL5KPfZ7Q,98425843564,修油缸气缸18852041880,771,484,男 ,18852041880,2024 - 12 - 2814: 51:33"""
+            42(10002),修油缸气缸,7,进入直播间,2027451038,MS4wLjABAAAAlC5jq0Db2nz58qZdzVs1DHCDXK6 - bbIpf - RL5KPfZ7Q,98425843564,修油缸气缸18852041880,771,484,男 ,18852041880,2024 - 12 - 2814: 51:33
+            :return: [[],[]]
+            """
         all_data: list = []
         for f in self._data:
             # TODO 数据处理部分
@@ -91,16 +92,43 @@ class DataHandle:
         return all_data
 
 
+    def handler_fensi(self,from_data,create_time=time.time()):
+        """
+            昵称	UID	简介	SECUID	抖音号	精准	蓝V认证	粉丝数 创建时间 from
+            粉丝关注列表数据处理
+            :return: [[],[]]
+        """
+        all_data = []
+        for i in self._data:
+            i[4] = "https://www.douyin.com/user/" + i[4]
+            i.pop(0)
+            i.append(create_time)
+            i.append(from_data)
+            all_data.append(i)
+        return all_data
+
+
+# 粉丝关注一条龙
+def fensi(file_dir="test_data/1228家美扫天下粉丝关注数据.xlsx"):
+    e = Read(excel_path=file_dir)
+    d = e.get_all_data()
+
+    h = DataHandle(d)
+    rs_d = h.handler_fensi(from_data="张伦")
+
+    i = Insert(insert_data=(rs_d))
+    i.insert_dy_fensi_data()
+    del  i
+    s = Select(sql_code=GET_FENSI_ALL_DATA)
+    s_d = s.get_all_data()
+    w = Write(excel_file_name="张论,粉丝关注列表数据0102.xlsx",filed=FILED_FenSi,data=s_d)
+    w.write_fensi_data()
+    pass
 
 
 
 
-
-
-
-
-
-# 抖音一条龙
+# 抖音直播一条龙
 def dy_live(file_dir="./test.xlsx"):
     read_data = Read(file_dir)
     dh = DataHandle(origin_data=read_data.get_all_data())
@@ -114,8 +142,9 @@ def dy_live(file_dir="./test.xlsx"):
     w.write_table_all_data()
 
 
+
 if __name__ == '__main__':
     start = time.time()
     # dy_live(file_dir="C:\\Users\\ly\\Desktop\\work\\source\\ly直播采集")
-    data_handle()
+    fensi()
     print(time.time()-start)
