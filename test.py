@@ -1,5 +1,6 @@
 import excel,sql,time
 start = time.time()
+
 def test_dy_live():
     """
         抖音直播间数据测试
@@ -11,9 +12,9 @@ def test_dy_live():
           '贺州',
           '', '2024-12-28 17:24:30', "test", "test", "test")]
 
-    # i = sql.Insert(insert_data=a)
-    # i.insert_dy_live_data()
-    # del i
+    i = sql.Insert(insert_data=a)
+    i.insert_dy_live_data()
+    del i
 
 def test_fensi():
     """
@@ -21,6 +22,8 @@ def test_fensi():
     """
     e = excel.Read('test_data/1228家美扫天下粉丝关注数据.xlsx')
     print(e.get_all_sheet())
+    s = sql.Select()
+
 
 
 test_fensi()

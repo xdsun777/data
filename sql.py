@@ -3,7 +3,7 @@ import sqlite3, re
 GET_ZhiBo_ALL_DATA = """
 SELECT id,主播昵称,时间, 用户昵称,  简介,精准,  动作,uid,sec_uid, 抖音号, 性别, 地区,勋章等级,粉丝, 关注, 创建时间,省份 FROM "main"."zhibo"  GROUP BY "uid";
 """
-
+"""sql语句:获取直播所有数据"""
 
 class Sql:
 	def __init__(self, db_name='./_data/douyin.db'):

@@ -1,9 +1,9 @@
 from openpyxl import Workbook, load_workbook
-# import itertools
-import os.path
-import time
+import os.path,time
 
 FILED_ZhiBo =['id','主播昵称','时间', '用户昵称',  '简介','精准',  '动作','uid','sec_uid', '抖音号', '性别', '地区','勋章等级','粉丝', '关注', '创建时间','省份']
+"""插入直播数据excel表的表头数据"""
+
 
 class Read:
 	def __init__(self, excel_path: str):
