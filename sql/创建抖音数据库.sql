@@ -46,11 +46,10 @@ CREATE TABLE "zhibo" (
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
 
-
 CREATE TABLE "fensi" (
 	"id"	INTEGER NOT NULL UNIQUE,
-	"昵称"	INTEGER,
-	"UID"	INTEGER,
+	"昵称"	TEXT,
+	"UID"	TEXT,
 	"简介"	TEXT,
 	"sec_uid"	TEXT,
 	"抖音号"	TEXT,
