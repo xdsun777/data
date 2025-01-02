@@ -34,7 +34,7 @@ def read_sql(db_name='C:\\Users\\ly\\Desktop\\pro\\data_\\douyin.db',sql_ = sql_
 
 
 # 保存数据到excel
-def saveResult(data):
+def save_result(data):
     result_app = xw.App(visible=False, add_book=False)
     result_wb = result_app.books.add()
 
@@ -58,5 +58,5 @@ def saveResult(data):
     result_wb.close()
     result_app.quit()
 
-# saveResult(read_sql())
+# save_result(read_sql())
 print(read_sql())

@@ -42,7 +42,7 @@ def get_data(file_list: list):
 
 
 # 保存数据到excel
-def saveResult(data):
+def save_result(data):
     result_app = xw.App(visible=False, add_book=False)
     result_wb = result_app.books.add()
 
@@ -135,5 +135,5 @@ if __name__ == '__main__':
             exit(0)
         all_data = get_data(file_path)
         clean_data = data_handle(all_data)
-        saveResult(clean_data)
+        save_result(clean_data)
         # print(clean_data)
