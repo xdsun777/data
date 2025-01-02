@@ -88,7 +88,7 @@ class DataHandle:
 
 # 抖音一条龙
 def dy_live(file_dir="./test.xlsx"):
-	read_data = excel.Read(file)
+	read_data = excel.Read(file_dir)
 	dh = DataHandle(origin_data=read_data.get_all_data())
 	i=sql.Insert(insert_data=dh.handle_zhibo())
 	i.insert_dy_live_data()
