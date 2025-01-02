@@ -418,8 +418,8 @@ def qx_to_s(qx):
 for i in a:
     qx_to_s(i[9])
 
-str = 'Python\\u624d\\u662f\\u4e16\\u754c\\u4e0a\\u6700\\u597d\\u7684\\u8bed\\u8a00'
-print(str.encode('utf8').decode('unicode_escape'))
+str1 = 'Python\\u624d\\u662f\\u4e16\\u754c\\u4e0a\\u6700\\u597d\\u7684\\u8bed\\u8a00'
+print(str1.encode('utf8').decode('unicode_escape'))
 l = '1(10002)'
 m = ',18942955144'
 print("10002" in l or "10005" in l)

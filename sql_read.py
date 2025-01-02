@@ -36,7 +36,7 @@ def read_sql(db_name='./_data/douyin.db', sql_=sql__all):
 
 
 # 保存数据到excel
-def saveResult(data,save_path):
+def save_result(data, save_path):
     result_app = xw.App(visible=False, add_book=False)
     result_wb = result_app.books.add()
 
@@ -62,5 +62,5 @@ def saveResult(data,save_path):
 
 
 file_path = os.path.join("C:\\Users\ly\Desktop\work\handle",time.strftime("%y-%m-%d..%H-%M-%S") + '.xlsx')
-saveResult(read_sql(),file_path)
+save_result(read_sql(), file_path)
 # print(read_sql())

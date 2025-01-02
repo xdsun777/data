@@ -63,5 +63,5 @@ if __name__ == '__main__':
 		  '', '2024-12-28 17:24:30', "qwe", "asd", "zxc")]
 
 	i = Insert(insert_data=a)
-	i.insert_live_data()
+	i.insert_dy_live_data()
 	del i

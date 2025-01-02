@@ -70,8 +70,8 @@ class Write:
 		s_set = set([i[-1] for i in self._data])
 		sht_list = [self.wb.create_sheet(x) for x in s_set]
 		list_set_dict = dict(zip(s_set, sht_list))
-		for s in list_set_dict:
-			self.sheet = list_set_dict[s]
+		for sheng in list_set_dict:
+			self.sheet = list_set_dict[sheng]
 			self.sheet.append(self.filed)
 		for data_list in self._data:
 			self.sheet = list_set_dict[data_list[-1]]
@@ -80,9 +80,9 @@ class Write:
 
 
 if __name__ == '__main__':
-	from sql import Sql, GET_ZhiBo_ALL_DATA, Select
+	import sql
 	# 读和写都 需要 传入或传出 双层list
-	s = Select(sql_code=GET_ZhiBo_ALL_DATA)
+	s = sql.Select(sql_code=sql.GET_ZhiBo_ALL_DATA)
 	s_d = s.get_all_data()
 	del s
 	# print(s_d)

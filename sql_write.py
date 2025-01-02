@@ -49,13 +49,13 @@ def write_sql(zhubonicheng, shijian, yonghunicheng, dongzuo, neirong, uid, douyi
 
 ['49(10002)', '乡下人', '13', '进入直播间', 'dyuee7g85unk', 'MS4wLjABAAAAbjSn9djMtfnxZAhtDLlS1s6QI6xWvCzW2XKrytlYajw', '110956384596', None, '174', '644', '-', None, None, '2024-12-27 09:26:57', '其他地区', 1735282536.0272715, '猎鹰蒸汽喷抽清洗机厂家']
 def all_data_write_sql(all_data):
-    for (i, data) in enumerate(all_data):
+    for (i_, data_) in enumerate(all_data):
         try:
-            write_sql(data[0],data[1], str(data[2]), data[3], data[4], data[5], data[6], data[7], data[8], data[9], data[10],
-                      data[11], data[12], data[13], data[14], data[15], data[16])
-            print("已写入：", i)
+            write_sql(data_[0], data_[1], str(data_[2]), data_[3], data_[4], data_[5], data_[6], data_[7], data_[8], data_[9], data_[10],
+                      data_[11], data_[12], data_[13], data_[14], data_[15], data_[16])
+            print("已写入：", i_)
         except:
-            print(data,"写入失败")
+            print(data_, "写入失败")
 
 
 # 读取excel文件的数据
