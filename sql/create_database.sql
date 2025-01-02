@@ -57,6 +57,6 @@ CREATE TABLE "fensi" (
 	"蓝v认证"	TEXT,
 	"粉丝数"	TEXT,
 	"创建时间"	TEXT,
-	"from"	TEXT,
+	"form"	TEXT,
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
