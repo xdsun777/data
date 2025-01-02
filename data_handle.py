@@ -68,7 +68,7 @@ class DataHandle:
                 f[5] = "https://www.douyin.com/user/" + f[5]
 
                 # 创建时间
-                f.append(time.time())
+                f.append(time.strftime("%Y-%m-%d %H:%M:%S"))
 
                 # 主播昵称
                 if "10002" in f[0] or "10005" in f[0]:
@@ -92,7 +92,7 @@ class DataHandle:
         return all_data
 
 
-    def handler_fensi(self,from_data,create_time=time.time()):
+    def handler_fensi(self,from_data,create_time=time.strftime('%Y-%m-%d %H:%M:%S')):
         """
             昵称	UID	简介	SECUID	抖音号	精准	蓝V认证	粉丝数 创建时间 from
             粉丝关注列表数据处理
@@ -109,19 +109,19 @@ class DataHandle:
 
 
 # 粉丝关注一条龙
-def fensi(file_dir="test_data/1228家美扫天下粉丝关注数据.xlsx"):
+def fensi(file_dir="test_data/1228家美扫天下粉丝关注数据.xlsx",form_user='test'):
     e = Read(excel_path=file_dir)
     d = e.get_all_data()
 
     h = DataHandle(d)
-    rs_d = h.handler_fensi(from_data="张伦")
+    rs_d = h.handler_fensi(from_data=form_user)
 
     i = Insert(insert_data=(rs_d))
     i.insert_dy_fensi_data()
     del  i
     s = Select(sql_code=GET_FENSI_ALL_DATA)
     s_d = s.get_all_data()
-    w = Write(excel_file_name="张论,粉丝关注列表数据0102.xlsx",filed=FILED_FenSi,data=s_d)
+    w = Write(excel_file_name=f"source/张伦/result/{form_user}粉丝关注列表数据{time.strftime('%m-%d')}.xlsx",filed=FILED_FenSi,data=s_d)
     w.write_fensi_data()
     pass
 
@@ -129,22 +129,22 @@ def fensi(file_dir="test_data/1228家美扫天下粉丝关注数据.xlsx"):
 
 
 # 抖音直播一条龙
-def dy_live(file_dir="./test.xlsx"):
+def dy_live(file_dir="test_excel_dir"):
     read_data = Read(file_dir)
     dh = DataHandle(origin_data=read_data.get_all_data())
-    i=sql.Insert(insert_data=dh.handle_zhibo())
+    i=Insert(insert_data=dh.handle_zhibo())
     i.insert_dy_live_data()
     del i
 
-    s = sql.Select(sql_code=GET_ZhiBo_ALL_DATA)
+    s = Select(sql_code=GET_ZhiBo_ALL_DATA)
     clean_data = s.get_all_data()
-    w = Write(excel_file_name="test.xlsx", filed=FILED_ZhiBo, data=clean_data)
+    w = Write(excel_file_name=os.path.join("source/ly直播采集/result",f'{time.strftime("%Y-%m-%d")}直播采集.xlsx'), filed=FILED_ZhiBo, data=clean_data)
     w.write_table_all_data()
 
 
 
 if __name__ == '__main__':
     start = time.time()
-    # dy_live(file_dir="C:\\Users\\ly\\Desktop\\work\\source\\ly直播采集")
-    fensi()
+    dy_live(file_dir="source/ly直播采集/temp")
+    fensi(file_dir='source/张伦/粉丝关注采集',form_user='张伦')
     print(time.time()-start)

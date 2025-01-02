@@ -2,8 +2,6 @@ import os.path
 import sqlite3, re,time
 from datetime import datetime
 
-from soupsieve import select
-
 GET_ZhiBo_ALL_DATA = """SELECT id,主播昵称,时间, 用户昵称,  简介,精准,  动作,uid,sec_uid, 抖音号, 性别, 地区,勋章等级,粉丝, 关注, 创建时间,省份 FROM "main"."zhibo"  GROUP BY "uid";
 """
 """sql语句:获取直播所有数据"""
@@ -21,21 +19,21 @@ SELECT 昵称,UID,简介,sec_uid,抖音号,精准,蓝V认证,粉丝数,创建时
 
 
 class Sql:
-    def __init__(self, db_name='./_data/douyin.db'):
+    def __init__(self, db_name='./sql/douyin.db'):
         def _regexp(expr, item):
             reg = re.compile(expr)
             return reg.search(item) is not None
 
-        self._con = sqlite3.connect(db_name)
-        self._con.create_function('REGEXP', 2, _regexp)
-        self._cursor = self._con.cursor()
+        self.con = sqlite3.connect(db_name)
+        self.con.create_function('REGEXP', 2, _regexp)
+        self._cursor = self.con.cursor()
 
     def __del__(self):
-        self._con.commit()
-        self._con.close()
+        self.con.commit()
+        self.con.close()
 
 class HandleTool(Sql):
-    def __init__(self,db_name='./_data/douyin.db',table_name=None):
+    def __init__(self,db_name='./sql/douyin.db',table_name=None):
         if not os.path.isfile(db_name) or table_name is None:
             exit(-1)
         self._db_name = db_name
@@ -49,16 +47,16 @@ class HandleTool(Sql):
         print(s_d[0])
         if "-" in str(s_d[0][1]) and ":" in str(s_d[0][1]) or type((s_d[0][0])) is not int:
             print("不符合规范")
-            exit(-1)
-        for i in s_d:
-            change_time = datetime.fromtimestamp(float(i[1])).strftime('%Y-%m-%d %H:%M:%S')
-            update = f'UPDATE "main"."{self._table_name}" SET 创建时间 = "{change_time}" WHERE id = "{int(i[0])}";'
-            print(update)
-            self._cursor.execute(update)
+        else:
+            for i in s_d:
+                change_time = datetime.fromtimestamp(float(i[1])).strftime('%Y-%m-%d %H:%M:%S')
+                update = f'UPDATE "main"."{self._table_name}" SET 创建时间 = "{change_time}" WHERE id = "{int(i[0])}";'
+                print(update)
+                self._cursor.execute(update)
 
 
 class Select(Sql):
-    def __init__(self, db_name='./_data/douyin.db', sql_code=None):
+    def __init__(self, db_name='./sql/douyin.db', sql_code=None):
         super().__init__(db_name=db_name)
         if sql_code:
             self.code_code = sql_code
@@ -71,7 +69,7 @@ class Select(Sql):
 
 
 class Insert(Sql):
-    def __init__(self, db_name='./_data/douyin.db', insert_data=None):
+    def __init__(self, db_name='./sql/douyin.db', insert_data=None):
         super().__init__(db_name=db_name)
         if insert_data:
             self._data = insert_data
@@ -97,13 +95,13 @@ class Insert(Sql):
 
 
 def changer_time():
-    ht = HandleTool(table_name="zhibo")
-    ht.time_to_convert()
-    del ht
+    # ht = HandleTool(table_name="zhibo")
+    # ht.time_to_convert()
+    # del ht
 
-    ht = HandleTool(table_name="zhibo2")
-    ht.time_to_convert()
-    del ht
+    # ht = HandleTool(table_name="zhibo2")
+    # ht.time_to_convert()
+    # del ht
 
     ht = HandleTool(table_name="fensi")
     ht.time_to_convert()
@@ -111,12 +109,9 @@ def changer_time():
 
 
 if __name__ == '__main__':
-    # print(GET_ZhiBo_NOW_DATA)
-    # s = Select(sql_code=GET_ZhiBo_NOW_DATA)
-    # print(s.get_all_data())
     start = time.time()
+
     changer_time()
 
     print(time.time() - start)
 
-    pass
