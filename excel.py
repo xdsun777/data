@@ -7,18 +7,18 @@ FILED_ZhiBo =['id','主播昵称','时间', '用户昵称',  '简介','精准', 
 
 class Read:
 	def __init__(self, excel_path: str):
-		self.excel_file_path = ''
-		self.excel_files_dir_path = ''
-		self.excel_files_path_list = []
-		self.wb = None
+		self._excel_file_path = ''
+		self._excel_files_dir_path = ''
+		self._excel_files_path_list = []
+		self._wb = None
 
 		if os.path.isdir(excel_path):
-			self.excel_files_dir_path = excel_path
-			self.excel_files_path_list = [f for f in os.listdir(excel_path) if f.endswith('.xlsx') and f[0] != '.']
+			self.__excel_files_dir_path = excel_path
+			self._excel_files_path_list = [f for f in os.listdir(excel_path) if f.endswith('.xlsx') and f[0] != '.']
 		else:
 			if excel_path.endswith('xlsx'):
-				self.excel_file_path = excel_path
-				self.wb = load_workbook(self.excel_file_path)
+				self._excel_file_path = excel_path
+				self.wb = load_workbook(self._excel_file_path)
 
 	def get_all_sheet(self) -> list:
 		return self.wb.sheetnames
@@ -30,12 +30,12 @@ class Read:
 			temp.pop(0)
 			return temp
 		else:
-			return self.get_multi_file_all_data()
+			return self._get_multi_file_all_data()
 
-	def get_multi_file_all_data(self) -> list[list]:
+	def _get_multi_file_all_data(self) -> list[list]:
 		all_data: list = []
-		for f in self.excel_files_path_list:
-			f = os.path.join(os.path.join(self.excel_files_dir_path, f))
+		for f in self._excel_files_path_list:
+			f = os.path.join(os.path.join(self._excel_files_dir_path, f))
 			self.wb = load_workbook(f)
 			all_data += self.get_all_data()
 		# return list(itertools.chain.from_iterable(all_data))
