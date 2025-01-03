@@ -1,8 +1,9 @@
 from openpyxl import Workbook, load_workbook
 import os.path, time
 
-FILED_ZhiBo = ['id', '主播昵称', '时间', '用户昵称', '简介', '精准', '动作', 'uid', 'sec_uid', '抖音号', '性别', '地区',
-               '勋章等级', '粉丝', '关注', '创建时间', '省份']
+# FILED_ZhiBo = ['id', '主播昵称', '时间', '用户昵称', '简介', '精准', '动作', 'uid', 'sec_uid', '抖音号', '性别', '地区',
+#                '勋章等级', '粉丝', '关注', '创建时间', '省份']
+FILED_ZhiBo = [ 'id','主播昵称','用户昵称','勋章等级','动作','抖音号','sec_uid','uid','简介','粉丝','关注','性别','地区','精准','时间','创建时间','省份']
 """插入直播数据excel表的表头数据"""
 FILED_FenSi = ['昵称', 'UID', '简介', 'sec_uid', '抖音号', '精准', '蓝V认证', '粉丝数', '创建时间', 'form']
 
@@ -74,6 +75,7 @@ class Write:
 
     def write_table_all_data(self):
         s_set = set([i[-1] for i in self._data])
+        print(s_set)
         sht_list = [self._wb.create_sheet(x) for x in s_set]
         list_set_dict = dict(zip(s_set, sht_list))
         for sheng in list_set_dict:

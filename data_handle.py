@@ -137,20 +137,20 @@ def fensi(input_file="/*test_excel_dir*/",form_user='test'):
 
 # 抖音直播一条龙
 def dy_live(input_files="/*test_excel_dir*/",out_file=f'{time.strftime("%Y-%m-%d")}直播采集.xlsx'):
-    read_data = Read(input_files)
-    dh = DataHandle(origin_data=read_data.get_all_data())
-    i=Insert(insert_data=dh.handle_zhibo())
-    i.insert_dy_live_data()
-    del i
+    # read_data = Read(input_files)
+    # dh = DataHandle(origin_data=read_data.get_all_data())
+    # i=Insert(insert_data=dh.handle_zhibo())
+    # i.insert_dy_live_data()
+    # del i
 
-    s = Select(sql_code=GET_ZhiBo_ALL_DATA)
-    clean_data = s.get_all_data()
-    w = Write(excel_file_name=out_file, filed=FILED_ZhiBo, data=clean_data)
+    s = Select(sql_code=Free)
+    data = s.get_all_data()
+    w = Write(excel_file_name=out_file, filed=FILED_ZhiBo, data=data)
     w.write_table_all_data()
 
 
 if __name__ == '__main__':
     start = time.time()
-    # dy_live(input_files="C:\\Users\\ly\\Desktop\\work\\source\\ly直播采集")
+    dy_live(input_files="C:\\Users\\ly\\Desktop\\work\\source\\ly直播采集\\0103直播间采集结果.xlsx")
     # fensi(input_file="C:\\Users\\ly\\Desktop\\work\\source\\张伦\\粉丝关注采集",form_user='张伦')
     print(time.time()-start)
