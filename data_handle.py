@@ -130,7 +130,6 @@ def fensi(input_file="/*test_excel_dir*/",form_user='test'):
     s_d = s.get_all_data()
     w = Write(excel_file_name=f"{time.strftime('%m-%d')}.{form_user}粉丝关注列表采集.xlsx",filed=FILED_FenSi,data=s_d)
     w.write_fensi_data()
-    pass
 
 
 
@@ -151,6 +150,6 @@ def dy_live(input_files="/*test_excel_dir*/",out_file=f'{time.strftime("%Y-%m-%d
 
 if __name__ == '__main__':
     start = time.time()
-    dy_live(input_files="C:\\Users\\ly\\Desktop\\work\\source\\ly直播采集\\0103直播间采集结果.xlsx")
+    # dy_live(input_files="C:\\Users\\ly\\Desktop\\work\\source\\ly直播采集\\0103直播间采集结果.xlsx")
     # fensi(input_file="C:\\Users\\ly\\Desktop\\work\\source\\张伦\\粉丝关注采集",form_user='张伦')
     print(time.time()-start)

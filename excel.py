@@ -93,5 +93,9 @@ class Write:
         self._wb.save(self.save_file_name)
 
 
-r = Read(excel_path='source/ly直播采集/temp')
-print(r.get_all_data())
+if __name__ == '__main__':
+    start = time.time()
+    r = Read(excel_path='source/ly直播采集/temp')
+    print(r.get_all_data())
+
+    print(time.time() - start)

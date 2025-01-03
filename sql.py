@@ -115,7 +115,6 @@ def changer_time():
 if __name__ == '__main__':
     start = time.time()
 
-    changer_time()
 
     print(time.time() - start)
 
