@@ -392,4 +392,4 @@ def zhuan_cun():
 
 
 if __name__ == '__main__':
-    zhuan_cun()
+    pass

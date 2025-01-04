@@ -109,7 +109,7 @@ def changer_time():
 
     ht = HandleTool(table_name="fensi")
     ht.time_to_convert()
-    del ht
+    # del ht
 
 
 if __name__ == '__main__':
