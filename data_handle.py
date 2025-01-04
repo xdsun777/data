@@ -1,6 +1,5 @@
-from openpyxl.styles.builtins import output
-
 from temp_data import city_data
+# noinspection PyUnresolvedReferences
 import requests,time
 from excel import *
 from sql import *
@@ -135,6 +134,7 @@ def fensi(input_file="/*test_excel_dir*/",form_user='test'):
 
 
 # 抖音直播一条龙
+# noinspection PyUnusedLocal
 def dy_live(input_files="/*test_excel_dir*/",out_file=f'{time.strftime("%Y-%m-%d")}直播采集.xlsx'):
     # read_data = Read(input_files)
     # dh = DataHandle(origin_data=read_data.get_all_data())
