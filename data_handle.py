@@ -15,7 +15,6 @@ class DataHandle:
             exit(-1)
         self._final_data = None
         self._temp_data = None
-        self.table_head_data = None
 
 
     @staticmethod
@@ -107,6 +106,20 @@ class DataHandle:
             all_data.append(i)
         return all_data
 
+    def handle_pinlun(self):
+        ['1', 'https://www.douyin.com/channel/300203?modal_id=7453068664078650660', '2024-12-27 23:33:55',
+         '家美扫天下（郴州）', '这样洗能洗干净吗？', '4073058105819598', '42279691464', '男', '湖南',
+         '.我是一个拿扫把扫地的家政人\n??分享酒店大型油烟系统清洗技术\n??分享酒店集中空调体系清洗技术\n?分享酒店大型水晶灯免拆洗技术\n????创业十年从一个小白到行业导师\n????经历了人生的酸甜苦辣精辟独到\n????能解决各种难题各种清洗技术拓客思维',
+         '69', '43', '',
+         'https://p26.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-i-0813c001_ogoCA9FbDqOleAAIEncK9iVngD4ACWAcVf6JIA.jpeg?from=3067671334',
+         'MS4wLjABAAAA_boATy3tzd89bbfKSE282OHjsGbLoa5V6_3m-8yO4eWvSXnDYaqp9A_OVU9aEPxm']
+        temp = ''
+        for i in self._data:
+            i[14] = "https://www.douyin.com/user/"+i[14]
+            print(i)
+
+
+
 
 # 粉丝关注一条龙
 def fensi(file_dir="test_data/1228家美扫天下粉丝关注数据.xlsx",form_user='test'):
@@ -145,6 +158,10 @@ def dy_live(file_dir="test_excel_dir"):
 
 if __name__ == '__main__':
     start = time.time()
-    dy_live(file_dir="source/ly直播采集/temp")
-    fensi(file_dir='source/张伦/粉丝关注采集',form_user='张伦')
+    # dy_live(file_dir="source/ly直播采集/temp")
+    # fensi(file_dir='source/张伦/粉丝关注采集',form_user='张伦')
+    r = Read('test_data/评论区采集.xlsx')
+    data = r.get_all_data()
+    h = DataHandle(origin_data=data)
+    h.handle_pinlun()
     print(time.time()-start)
