@@ -8,8 +8,9 @@ __pycache__/
 *.db
 .idea/
 _data
-
-
+*.sqbpro
+*.csv
+source/
 # Distribution / packaging
 .Python
 build/

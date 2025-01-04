@@ -5,8 +5,10 @@ from datetime import datetime
 GET_ZhiBo_ALL_DATA = """SELECT id,主播昵称,时间, 用户昵称,  简介,精准,  动作,uid,sec_uid, 抖音号, 性别, 地区,勋章等级,粉丝, 关注, 创建时间,省份 FROM "main"."zhibo"  GROUP BY "uid";
 """
 """sql语句:获取直播所有数据"""
-GET_ZhiBo_NOW_DATA = f"SELECT '_rowid_',* FROM 'main'.'zhibo' WHERE '时间' REGEXP '{time.strftime('%Y-%m-%d')}' GROUP BY 'uid' ORDER BY '主播昵称';"
+
+GET_ZhiBo_NOW_DATA = f'SELECT id, 主播昵称,用户昵称,勋章等级,动作,抖音号,sec_uid,uid,简介,粉丝,关注,性别,地区,精准,时间,创建时间,省份 FROM "main"."zhibo" WHERE "时间" LIKE "%' + time.strftime("%Y-%m-%d")+ '%" ESCAPE "\\" GROUP BY "uid" ORDER BY "省份";'
 """sql语句:获取直播当天数据"""
+
 GET_FENSI_ALL_DATA = """
 SELECT 昵称,UID,简介,sec_uid,抖音号,精准,蓝V认证,粉丝数,创建时间,form FROM "main"."fensi" GROUP BY "UID"
 """
@@ -17,6 +19,8 @@ SELECT 昵称,UID,简介,sec_uid,抖音号,精准,蓝V认证,粉丝数,创建时
 """sql语句:获取粉丝关注所有数据"""
 
 
+Free = f'SELECT id,主播昵称,用户昵称,勋章等级,动作,抖音号,sec_uid,uid,简介,粉丝,关注,性别,地区,精准,时间,创建时间,省份 FROM "main"."zhibo" WHERE "时间" LIKE "%2025-01-02%" ESCAPE "\\" GROUP BY "uid" ORDER BY "省份";'
+'''sql:自由组合'''
 
 class Sql:
     def __init__(self, db_name='./sql/douyin.db'):
@@ -110,5 +114,7 @@ def changer_time():
 
 if __name__ == '__main__':
     start = time.time()
+
+
     print(time.time() - start)
 

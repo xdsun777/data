@@ -16,6 +16,8 @@ class DataHandle:
         self._final_data = None
         self._temp_data = None
 
+        self.create_time = time.strftime('%Y-%m-%d %H:%M:%S')
+
 
     @staticmethod
     def get_place(phone):
@@ -67,7 +69,7 @@ class DataHandle:
                 f[5] = "https://www.douyin.com/user/" + f[5]
 
                 # 创建时间
-                f.append(time.strftime("%Y-%m-%d %H:%M:%S"))
+                f.append(self.create_time)
 
                 # 主播昵称
                 if "10002" in f[0] or "10005" in f[0]:
@@ -91,12 +93,14 @@ class DataHandle:
         return all_data
 
 
-    def handler_fensi(self,from_data,create_time=time.strftime('%Y-%m-%d %H:%M:%S')):
+    def handler_fensi(self,from_data,create_time=None):
         """
             昵称	UID	简介	SECUID	抖音号	精准	蓝V认证	粉丝数 创建时间 from
             粉丝关注列表数据处理
             :return: [[],[]]
         """
+        if not create_time:
+            create_time = self.create_time
         all_data = []
         for i in self._data:
             i[4] = "https://www.douyin.com/user/" + i[4]
@@ -122,36 +126,35 @@ class DataHandle:
 
 
 # 粉丝关注一条龙
-def fensi(file_dir="test_data/1228家美扫天下粉丝关注数据.xlsx",form_user='test'):
-    e = Read(excel_path=file_dir)
+def fensi(input_file="/*test_excel_dir*/",form_user='test'):
+    e = Read(excel_path=input_file)
     d = e.get_all_data()
 
     h = DataHandle(d)
     rs_d = h.handler_fensi(from_data=form_user)
 
-    i = Insert(insert_data=(rs_d))
+    i = Insert(insert_data=rs_d)
     i.insert_dy_fensi_data()
     del  i
     s = Select(sql_code=GET_FENSI_ALL_DATA)
     s_d = s.get_all_data()
-    w = Write(excel_file_name=f"source/张伦/result/{form_user}粉丝关注列表数据{time.strftime('%m-%d')}.xlsx",filed=FILED_FenSi,data=s_d)
+    w = Write(excel_file_name=f"{time.strftime('%m-%d')}.{form_user}粉丝关注列表采集.xlsx",filed=FILED_FenSi,data=s_d)
     w.write_fensi_data()
-    pass
 
 
 
 
 # 抖音直播一条龙
-def dy_live(file_dir="test_excel_dir"):
-    read_data = Read(file_dir)
-    dh = DataHandle(origin_data=read_data.get_all_data())
-    i=Insert(insert_data=dh.handle_zhibo())
-    i.insert_dy_live_data()
-    del i
+def dy_live(input_files="/*test_excel_dir*/",out_file=f'{time.strftime("%Y-%m-%d")}直播采集.xlsx'):
+    # read_data = Read(input_files)
+    # dh = DataHandle(origin_data=read_data.get_all_data())
+    # i=Insert(insert_data=dh.handle_zhibo())
+    # i.insert_dy_live_data()
+    # del i
 
-    s = Select(sql_code=GET_ZhiBo_ALL_DATA)
-    clean_data = s.get_all_data()
-    w = Write(excel_file_name=os.path.join("source/ly直播采集/result",f'{time.strftime("%Y-%m-%d")}直播采集.xlsx'), filed=FILED_ZhiBo, data=clean_data)
+    s = Select(sql_code=Free)
+    data = s.get_all_data()
+    w = Write(excel_file_name=out_file, filed=FILED_ZhiBo, data=data)
     w.write_table_all_data()
 
 

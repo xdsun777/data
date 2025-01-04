@@ -60,6 +60,13 @@ CREATE TABLE "fensi" (
 	"form"	TEXT,
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
+CREATE TABLE "zhibojian" (
+	"id"	INTEGER NOT NULL UNIQUE,
+	"主播昵称"	TEXT,
+	"直播间地址"	TEXT,
+	"粉丝数"	TEXT,
+	"关注数"	TEXT,
+	PRIMARY KEY("id" AUTOINCREMENT)
 
 --  视频链接	时间	昵称	评论内容	uid	抖音号	性别	简介	粉丝	关注	精准	头像	sec_uid 创建时间  地区
 CREATE TABLE "pinglun" (
@@ -81,3 +88,15 @@ CREATE TABLE "pinglun" (
 	"地区"	TEXT,
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
+
+
+
+
+
+
+
+
+
+
+
+

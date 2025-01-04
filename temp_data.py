@@ -352,3 +352,44 @@ city_data = {
                '水磨沟区', '库尔勒市', '新源县', '沙依巴克区', '玛纳斯县', '乌鲁木齐县', '策勒县'],
     '台湾省': ['新北市', '台中市', '高雄市', '嘉义市', '基隆市', '台南市', '桃园市', '宜兰县', '台北市', '新竹市'],
     '香港': ['香港'], '澳门': ['澳门']}
+
+import sqlite3
+
+
+def zhuan_cun():
+    """
+    src：主播昵称,时间,用户昵称, 动作, 内容, Uid, 抖音号, 性别, 地区, 简介, 等级, 粉丝, 关注, 精准, Secid, qurl, 私密, 蓝V, 作品链接, 创建时间, 省份
+    dec: 编号.,主播昵称.,用户昵称.,勋章等级,动作,抖音号,sec_uid,uid,简介,粉丝,关注,性别,地区,精准,时间,省份,创建时间,
+    """
+    condec = sqlite3.connect("C:\\Users\\ly\\Desktop\\work\\data-main\\sql\\douyin.db")
+    consrc = sqlite3.connect("C:\\Users\\ly\\Desktop\\_data\\20150102douyin.db")
+
+    cousor2 = consrc.cursor()
+    cousor1 = condec.cursor()
+
+    cousor2.execute('select * from "main".zhibo2')
+    for i in cousor2:
+        i = list(i)
+        i.pop(0)
+        cousor1.execute('INSERT INTO zhibo2 (主播昵称,时间,用户昵称, 动作, 内容, Uid, 抖音号, 性别, 地区, 简介, 等级, 粉丝, 关注, 精准, Secid, qurl, 私密, 蓝V, 作品链接, 创建时间, 省份) VALUES (?, ?, ?,?, ?, ?,?, ?, ?,?, ?, ?,?, ?, ?,?,?,?,?,?,?)',
+            ( i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], i[11], i[12],i[13], i[14], i[15],i[16],i[17],i[18],i[19],i[20]))
+    # cousor2.execute(
+    #     'SELECT 主播昵称, 用户昵称, 等级, 抖音号, Secid, Uid, 简介, 粉丝, 关注, 性别, 地区, 精准, 时间, 省份, 创建时间 ,动作,内容 FROM "main".zhibo2;', )
+
+    condec.commit()
+    condec.close()
+
+    # for i in cousor2:
+    #     i = list(i)
+    #     if i[-1] is not None and "发言" in i[15]:
+    #         i[15] = "弹幕：" + i[-1]
+    #     cousor1.execute(
+    #         'INSERT INTO zhibo (编号,主播昵称,用户昵称,勋章等级,抖音号,sec_uid,uid,简介,粉丝,关注,性别,地区,精准,时间, 省份,创建时间,动作) VALUES (?, ?, ?,?, ?, ?,?, ?, ?,?, ?, ?,?, ?, ?,?,?)',
+    #         ("000(10002)", i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9], i[10], i[11], i[12],
+    #          i[13], i[14], i[15])
+    #         )
+
+
+
+if __name__ == '__main__':
+    zhuan_cun()
