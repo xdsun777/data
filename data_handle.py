@@ -1,4 +1,5 @@
 from temp_data import city_data
+# noinspection PyUnresolvedReferences
 import requests,time
 from excel import *
 from sql import *
@@ -38,10 +39,10 @@ class DataHandle:
         """市县区 转 省"""
         for s in city_data:
             if qx is not None and type(qx) != 'NoneType':
-                h = qx + "市"
-                x = qx + "县"
-                z = qx + "镇"
-                if qx in city_data[s] or h in city_data[s] or x in city_data[s] or z in city_data[s]:
+                _h = qx + "市"
+                _x = qx + "县"
+                _z = qx + "镇"
+                if qx in city_data[s] or _h in city_data[s] or _x in city_data[s] or _z in city_data[s]:
                     return s
         # print("未找到该地区所在省份")
         return None
@@ -145,6 +146,7 @@ def fensi(input_file="/*test_excel_dir*/",form_user='test'):
 
 
 # 抖音直播一条龙
+# noinspection PyUnusedLocal
 def dy_live(input_files="/*test_excel_dir*/",out_file=f'{time.strftime("%Y-%m-%d")}直播采集.xlsx'):
     # read_data = Read(input_files)
     # dh = DataHandle(origin_data=read_data.get_all_data())
