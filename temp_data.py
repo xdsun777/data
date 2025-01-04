@@ -362,7 +362,7 @@ def zhuan_cun():
     dec: 编号.,主播昵称.,用户昵称.,勋章等级,动作,抖音号,sec_uid,uid,简介,粉丝,关注,性别,地区,精准,时间,省份,创建时间,
     """
     condec = sqlite3.connect("C:\\Users\\ly\\Desktop\\work\\data-main\\sql\\douyin.db")
-    consrc = sqlite3.connect("C:\\Users\\ly\\Desktop\\_data\\douyin.db")
+    consrc = sqlite3.connect("C:\\Users\\ly\\Desktop\\_data\\20150102douyin.db")
 
     cousor2 = consrc.cursor()
     cousor1 = condec.cursor()
@@ -391,4 +391,5 @@ def zhuan_cun():
 
 
 
-zhuan_cun()
+if __name__ == '__main__':
+    zhuan_cun()
