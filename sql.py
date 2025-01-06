@@ -36,29 +36,6 @@ class Sql:
         self.con.commit()
         self.con.close()
 
-class HandleTool(Sql):
-    def __init__(self,db_name='./sql/douyin.db',table_name=None):
-        if not os.path.isfile(db_name) or table_name is None:
-            exit(-1)
-        self._db_name = db_name
-        self._table_name = table_name
-        super().__init__(db_name=self._db_name)
-
-    def time_to_convert(self):
-        cha_code = f'SELECT id,创建时间 FROM "main"."{self._table_name}"  ORDER BY "uid";'
-        s = Select(db_name=self._db_name,sql_code=cha_code)
-        s_d = s.get_all_data()
-        print(s_d[0])
-        if "-" in str(s_d[0][1]) and ":" in str(s_d[0][1]) or type((s_d[0][0])) is not int:
-            print("不符合规范")
-        else:
-            for i in s_d:
-                change_time = datetime.fromtimestamp(float(i[1])).strftime('%Y-%m-%d %H:%M:%S')
-                update = f'UPDATE "main"."{self._table_name}" SET 创建时间 = "{change_time}" WHERE id = "{int(i[0])}";'
-                print(update)
-                self._cursor.execute(update)
-
-
 class Select(Sql):
     def __init__(self, db_name='./sql/douyin.db', sql_code=None):
         super().__init__(db_name=db_name)
@@ -105,24 +82,46 @@ class Insert(Sql):
                 )
 
 
+class HandleTool(Sql):
+    def __init__(self,db_name='./sql/douyin.db',table_name=None):
+        if not os.path.isfile(db_name) or table_name is None:
+            exit(-1)
+        self._db_name = db_name
+        self._table_name = table_name
+        super().__init__(db_name=self._db_name)
+
+    def time_to_convert(self):
+        cha_code = f'SELECT id,创建时间 FROM "main"."{self._table_name}"  ORDER BY "uid";'
+        s = Select(db_name=self._db_name,sql_code=cha_code)
+        s_d = s.get_all_data()
+        print(s_d)
+        for i in s_d:
+            if '-' not in i[1]:
+                change_time = datetime.fromtimestamp(float(i[1])).strftime('%Y-%m-%d %H:%M:%S')
+                update = f'UPDATE "main"."{self._table_name}" SET 创建时间 = "{change_time}" WHERE id = "{int(i[0])}";'
+                print(update)
+                self._cursor.execute(update)
+
+
+
 
 def changer_time():
-    # ht = HandleTool(table_name="zhibo")
-    # ht.time_to_convert()
-    # del ht
+    ht = HandleTool(table_name="zhibo")
+    ht.time_to_convert()
+    del ht
 
     # ht = HandleTool(table_name="zhibo2")
     # ht.time_to_convert()
     # del ht
 
-    ht = HandleTool(table_name="fensi")
-    ht.time_to_convert()
+    # ht = HandleTool(table_name="fensi")
+    # ht.time_to_convert()
     # del ht
 
 
 if __name__ == '__main__':
     start = time.time()
-
+    changer_time()
 
     print(time.time() - start)
 
