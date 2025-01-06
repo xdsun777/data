@@ -1,3 +1,5 @@
+from binascii import a2b_qp
+
 from temp_data import city_data
 # noinspection PyUnresolvedReferences
 import requests,time
@@ -112,16 +114,23 @@ class DataHandle:
         return all_data
 
     def handle_pinlun(self):
+        """视频链接,时间,昵称,评论内容,uid,抖音号,性别,简介,粉丝,关注,精准,头像 ,sec_uid,创建时间,地区"""
         ['1', 'https://www.douyin.com/channel/300203?modal_id=7453068664078650660', '2024-12-27 23:33:55',
          '家美扫天下（郴州）', '这样洗能洗干净吗？', '4073058105819598', '42279691464', '男', '湖南',
          '.我是一个拿扫把扫地的家政人\n??分享酒店大型油烟系统清洗技术\n??分享酒店集中空调体系清洗技术\n?分享酒店大型水晶灯免拆洗技术\n????创业十年从一个小白到行业导师\n????经历了人生的酸甜苦辣精辟独到\n????能解决各种难题各种清洗技术拓客思维',
          '69', '43', '',
          'https://p26.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-i-0813c001_ogoCA9FbDqOleAAIEncK9iVngD4ACWAcVf6JIA.jpeg?from=3067671334',
          'MS4wLjABAAAA_boATy3tzd89bbfKSE282OHjsGbLoa5V6_3m-8yO4eWvSXnDYaqp9A_OVU9aEPxm']
-        temp = ''
+        all_data = []
         for i in self._data:
             i[14] = "https://www.douyin.com/user/"+i[14]
-            print(i)
+            i.append(time.time())
+            # i.append(i[8])
+            i.pop(0)
+            all_data.append(i)
+        return all_data
+
+
 
 
 
@@ -169,4 +178,10 @@ if __name__ == '__main__':
     data = r.get_all_data()
     h = DataHandle(origin_data=data)
     h.handle_pinlun()
+    i = Insert(insert_data=data)
+    i.insert_dy_pinglun_data('张伦')
+    del i
+    s = Select(sql_code=GET_PINGLUN_ALL_DATA(form='张伦'))
+    w = Write(excel_file_name='pinglun.xlsx',filed=FILED_PINGLUN,data=s.get_all_data())
+    w.write_pinglun_data()
     print(time.time()-start)

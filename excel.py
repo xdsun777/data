@@ -6,6 +6,7 @@ FILED_ZhiBo = ['id', '主播昵称', '时间', '用户昵称', '简介', '精准
 """插入直播数据excel表的表头数据"""
 FILED_FenSi = ['昵称', 'UID', '简介', 'sec_uid', '抖音号', '精准', '蓝V认证', '粉丝数', '创建时间', 'form']
 
+FILED_PINGLUN = ['视频链接','时间','昵称','评论内容','uid','抖音号','性别','简介','粉丝','关注','精准','头像' ,'sec_uid','创建时间','form','地区']
 
 class Read:
     def __init__(self, excel_path: str):
@@ -84,6 +85,12 @@ class Write:
         self._wb.save(self.save_file_name)
 
     def write_fensi_data(self):
+        self.sheet.append(self.filed)
+        for i in self._data:
+            self.sheet.append(i)
+        self._wb.save(self.save_file_name)
+
+    def write_pinglun_data(self):
         self.sheet.append(self.filed)
         for i in self._data:
             self.sheet.append(i)
