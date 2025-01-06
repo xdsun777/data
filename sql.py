@@ -17,10 +17,7 @@ GET_FENSI_NOW_DATA = """SELECT 昵称,UID,简介,sec_uid,抖音号,精准,蓝V�
 GET_ZhiBo_NOW_DATA = f'SELECT id, 主播昵称,用户昵称,勋章等级,动作,抖音号,sec_uid,uid,简介,粉丝,关注,性别,地区,精准,时间,创建时间,省份 FROM "main"."zhibo" WHERE "时间" LIKE "%' + time.strftime("%Y-%m-%d")+ '%" ESCAPE "\\" GROUP BY "uid" ORDER BY "省份";'
 """sql语句:获取直播当天数据"""
 
-Free = f'SELECT id,主播昵称,用户昵称,勋章等级,动作,抖音号,sec_uid,uid,简介,粉丝,关注,性别,地区,精准,时间,创建时间,省份 FROM "main"."zhibo" WHERE "时间" LIKE "%2025-01-02%" ESCAPE "\\" GROUP BY "uid" ORDER BY "省份";'
-'''sql:自由组合'''
-
-def GET_PINGLUN_ALL_DATA(form = ''):
+def GET_PINGLUN_ALL_DATA(form = 'test'):
     return f'SELECT 视频链接,时间,昵称,评论内容,uid,抖音号,性别,简介,粉丝,关注,精准,头像 ,sec_uid,创建时间,form,地区 FROM "main"."pinglun" WHERE "form" LIKE "{form}" ORDER BY "地区";'
 
 
