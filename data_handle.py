@@ -128,4 +128,20 @@ class DataHandle:
 if __name__ == '__main__':
     start = time.time()
 
-    print(time.time()-start)
+    sq = """SELECT 用户昵称,简介,动作,抖音号,sec_uid,uid FROM "main"."zhibo" GROUP BY "UID"
+    """
+    s = Select(sql_code=sq)
+    date = s.get_all_data()
+    print(len(date))
+    temp = []
+    words = ['清','洗','什么','油','烟','多','少','价','米','地址','位置','汽','美','车','洁','膜','修']
+    with open('uid.txt', 'w') as f:
+        for i in date:
+            d = str(i[0]) + str(i[1]) + str(i[2])
+            for a in words:
+                if a in d:
+                    temp.append(i)
+                    f.write(i[-1]+"\n")
+
+    print(len(temp))
+    print("执行时间：",time.time()-start)
