@@ -66,7 +66,7 @@ def zhexian():
     y3 = [len(b[1][i]) for i in b[1]]
 
     # 创建画布
-    plt.figure("All and growth",figsize=(500, 100), dpi=100)
+    plt.figure("All and growth",figsize=(100, 100), dpi=100)
     plt.grid(True, linestyle='--', alpha=0.5)  # alpha表示透明度，0最浅
     plt.xlabel("日期", fontproperties=font)
     plt.ylabel("人数", fontproperties=font)
@@ -83,7 +83,7 @@ def zhexian():
     plt.legend(loc='best')
     plt.savefig("allGrowth.png")
 
-    plt.figure("老客户",figsize=(500, 100))
+    plt.figure("老客户",figsize=(100, 100))
     plt.bar(x3, y3, label="Old")
     for i,t in enumerate(b[1]):
         plt.text(t, len(b[1][t]), '%d' % len(b[1][t]), ha='center', va='bottom',color='b')
