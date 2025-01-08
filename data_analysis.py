@@ -1,16 +1,14 @@
-import time
-from cProfile import label
-from datetime import datetime, timedelta
-
-from matplotlib.pyplot import title
-
-from sql import *
-import matplotlib.pyplot as plt
-import numpy as np
 from matplotlib.font_manager import FontProperties
+from datetime import datetime, timedelta
+import matplotlib.pyplot as plt
+import time
+from sql import *
 
 font = FontProperties(fname="./wqy-zenhei.ttc", size=14)
-plt.rcParams['axes.unicode_minus'] = False
+plt.rcParams.update({
+    'axes.unicode_minus': False,
+    'font.size': 20
+})
 
 
 def get_all_data():
@@ -24,9 +22,8 @@ def get_all_data():
     # 打印日期序列
     for d in dates:
         de = d.strftime('%Y-%m-%d')
-        zhibo = f'SELECT id,主播昵称,用户昵称,勋章等级,动作,抖音号,sec_uid,uid,简介,粉丝,关注,性别,地区,精准,时间,创建时间,省份 FROM "main"."zhibo" WHERE "时间" LIKE "%{de}%" ESCAPE "\\" GROUP BY "uid" ORDER BY "省份";'
+        zhibo = f'SELECT id,主播昵称,用户昵称,勋章等级,动作,抖音号,sec_uid,uid,简介,粉丝,关注,性别,地区,精准,时间,创建时间,省份 FROM "main"."zhibo" WHERE "时间" LIKE "%{de}%" ESCAPE "\\" AND "主播昵称" LIKE "%猎鹰蒸汽喷抽清洗机厂家%" ESCAPE "\\" GROUP BY "uid" ORDER BY "省份";'
         s = Select(sql_code=zhibo)
-
         datas[de[5:]] = s.get_all_data()
     return datas
 
@@ -66,7 +63,7 @@ def zhexian():
     y3 = [len(b[1][i]) for i in b[1]]
 
     # 创建画布
-    plt.figure("All and growth",figsize=(100, 100), dpi=100)
+    plt.figure("All and growth", figsize=(100, 100), dpi=100)
     plt.grid(True, linestyle='--', alpha=0.5)  # alpha表示透明度，0最浅
     plt.xlabel("日期", fontproperties=font)
     plt.ylabel("人数", fontproperties=font)
@@ -76,33 +73,26 @@ def zhexian():
     plt.plot(x1, y1, color='g', linestyle=':', label='Total')
     plt.plot(x2, y2, color='r', linestyle="-.", label="Growth")
 
-    for i,t in enumerate(g1):
-        plt.text(t,len(g1[t]),'%d'%len(g1[t]),ha='center',va='bottom',color='g')
-    for i,t in enumerate(b[0]):
-        plt.text(t, len(b[0][t]), '%d' % len(b[0][t]), ha='center', va='bottom',color='r')
+    for i, t in enumerate(g1):
+        plt.text(t, len(g1[t]), '%d' % len(g1[t]), ha='center', va='bottom', color='g')
+    for i, t in enumerate(b[0]):
+        plt.text(t, len(b[0][t]), '%d' % len(b[0][t]), ha='center', va='bottom', color='r')
     plt.legend(loc='best')
     plt.savefig("allGrowth.png")
 
-    plt.figure("老客户",figsize=(100, 100))
+    plt.figure("老客户", figsize=(100, 100))
     plt.bar(x3, y3, label="Old")
-    for i,t in enumerate(b[1]):
-        plt.text(t, len(b[1][t]), '%d' % len(b[1][t]), ha='center', va='bottom',color='b')
+    for i, t in enumerate(b[1]):
+        plt.text(t, len(b[1][t]), '%d' % len(b[1][t]), ha='center', va='bottom', color='b')
 
     plt.legend(loc='best')
     # 显示图像
     plt.savefig('old.png')
-    plt.show()
-
-
-
+    # plt.show()
 
 
 if __name__ == '__main__':
     start = time.time()
     zhexian()
 
-
-
-
-
-    print(time.time()-start)
+    print(time.time() - start)
