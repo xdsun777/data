@@ -1,3 +1,4 @@
+import time
 from cProfile import label
 from datetime import datetime, timedelta
 
@@ -15,7 +16,7 @@ plt.rcParams['axes.unicode_minus'] = False
 def get_all_data():
     datas = {}
     # 设定起始日期
-    start_date = datetime(2024, 12, 26)
+    start_date = datetime(2024, 11, 25)
     # 设定结束日期
     end_date = datetime.now()
     # 生成日期序列
@@ -25,7 +26,8 @@ def get_all_data():
         de = d.strftime('%Y-%m-%d')
         zhibo = f'SELECT id,主播昵称,用户昵称,勋章等级,动作,抖音号,sec_uid,uid,简介,粉丝,关注,性别,地区,精准,时间,创建时间,省份 FROM "main"."zhibo" WHERE "时间" LIKE "%{de}%" ESCAPE "\\" GROUP BY "uid" ORDER BY "省份";'
         s = Select(sql_code=zhibo)
-        datas[de] = s.get_all_data()
+
+        datas[de[5:]] = s.get_all_data()
     return datas
 
 
@@ -64,7 +66,7 @@ def zhexian():
     y3 = [len(b[1][i]) for i in b[1]]
 
     # 创建画布
-    plt.figure("All and growth",figsize=(10, 10), dpi=100)
+    plt.figure("All and growth",figsize=(500, 100), dpi=100)
     plt.grid(True, linestyle='--', alpha=0.5)  # alpha表示透明度，0最浅
     plt.xlabel("日期", fontproperties=font)
     plt.ylabel("人数", fontproperties=font)
@@ -79,16 +81,28 @@ def zhexian():
     for i,t in enumerate(b[0]):
         plt.text(t, len(b[0][t]), '%d' % len(b[0][t]), ha='center', va='bottom',color='r')
     plt.legend(loc='best')
+    plt.savefig("allGrowth.png")
 
-
-    plt.figure("老客户")
+    plt.figure("老客户",figsize=(500, 100))
     plt.bar(x3, y3, label="Old")
     for i,t in enumerate(b[1]):
         plt.text(t, len(b[1][t]), '%d' % len(b[1][t]), ha='center', va='bottom',color='b')
 
     plt.legend(loc='best')
     # 显示图像
-    plt.show()
+    plt.savefig('old.png')
+    # plt.show()
 
 
-zhexian()
+
+
+
+if __name__ == '__main__':
+    start = time.time()
+    zhexian()
+
+
+
+
+
+    print(time.time()-start)
