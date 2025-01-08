@@ -91,7 +91,7 @@ def zhexian():
     plt.legend(loc='best')
     # 显示图像
     plt.savefig('old.png')
-    # plt.show()
+    plt.show()
 
 
 
