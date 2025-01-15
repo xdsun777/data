@@ -1,15 +1,15 @@
-import json
-import os.path
-from itertools import count
-from pprint import pprint
 from selenium.webdriver.common.actions.wheel_input import ScrollOrigin
+from pprint import pprint
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium import webdriver
 from selenium.common import *
+import os.path
+import json
 import time
+import sys
 import re
 
 url = "https://www.douyin.com/aweme/v1/web/user/following/list/?device_platform=webapp&aid=6383&channel=channel_pc_web&user_id=2122537659534131&sec_user_id=MS4wLjABAAAAnoZ9Rnmr6kvxgM3wb2IBMYeCj6gttYhW-7zlOepjxch87F9E62f8TgkqMoUqy6d3&offset=0&min_time=0&max_time=1736319532&count=20&source_type=1&gps_access=0&address_book_access=0&is_top=1&update_version_code=170400&pc_client_type=1&pc_libra_divert=Linux&version_code=170400&version_name=17.4.0&cookie_enabled=true&screen_width=1536&screen_height=864&browser_language=zh&browser_platform=Linux+x86_64&browser_name=Chrome&browser_version=131.0.0.0&browser_online=true&engine_name=Blink&engine_version=131.0.0.0&os_name=Linux&os_version=x86_64&cpu_core_num=8&device_memory=8&platform=PC&downlink=10&effective_type=4g&round_trip_time=50&webid=7454097220578002451&uifid=e75c56bdf97dd123c08792ffa35cba4de8d74d7b2bc4961ed76373e52a768f56a3cf650b3477952e13a9bbc61c81ecdab6017fd1f7dde93766cec15cf57aa04fd5357e75aab09bc37f0338ffa81a8093ec551acd29c24077875a27598d9ae85514b88b1c2a22c832c9aa5a1d1af78a40c14479468e3c55f5df1395cecc515027aa0a95cd8af35d75cb56086b073af65e84e3a93b266b413a76641048260553e1&msToken=72HkCZ22PyiV-UWCPJqN9v9el__vSF6xKSOnkjq_xdqf-SyOkFmOsYkX2xrIMqh_b_gM-82T4qrX0abP8ipY5ohal7EumeHKNl9tiyxqD96SG9e1bgGZa744o5dO1vprx6PVRaD9oESvhVwgkcev1GqMaJC1crn9bG0_UIK1vtm4&a_bogus=Ej45hHW7OoQbKd%2FS8csz9V9legV%2FrTSy%2FeioWHoP9NKGGqUb28PBineIbowK4Tv4FSpiweAHUdPMbndbO4X0ZHnkumhkSgkRTtAIIwfo81JdbBJgV1W2ejbEKi4YWAsPKAIJNaEXX0UL1gcfZNcsWFFy9AeJ-%2FR8zqa6pP4g7x8BhemxV2xyTauzxiGe--%2FIsjW%3D&verifyFp=verify_m5ap3bbt_q3cr7vTt_OmLh_40eN_8tXI_C7e4phePvILG&fp=verify_m5ap3bbt_q3cr7vTt_OmLh_40eN_8tXI_C7e4phePvILG"
@@ -118,7 +118,10 @@ def fans_components():
             with open('fans.json', 'w') as f:
                 f.write(json.dumps(fansJ))
     else:
+        count = fansJ['count']
         for i,t in enumerate(fansJ['context'][fansJ['count']:fansJ['total']]):
+            if i < count:
+                continue
             fans(driver,t['sec_uid'])
             fansJ['status'] = 1
             fansJ['count'] = i
@@ -134,10 +137,14 @@ def setup():
     option.set_capability('goog:loggingPrefs', cap)
     option.add_experimental_option("detach", True)
 
-    if os.uname().sysname == 'Linux':
+    if sys.platform == 'linux':
         option.add_argument(r"user-data-dir=/home/charm/onlyone/pro/douyin_sqlite_bak/test")
         option.binary_location = r'/home/charm/onlyone/pro/douyin_sqlite_bak/selenium/chrome/linux64/131.0.6778.264/chrome'
         service.executable_path = '/home/charm/onlyone/pro/douyin_sqlite_bak/selenium/chromedriver/linux64/131.0.6778.264/chromedriver'
+    else:
+        option.add_argument(r'user-data-dir=C:\Users\ly\Documents\cached_google')
+        option.binary_location = r'C:\Program Files\Google\Chrome Dev\Application\chrome.exe'
+        service.executable_path = r'C:\Users\ly\Documents\cached_google\chromedriver-win64'
     # option.add_argument("--disable-background-network-ingestion")
     # option.add_argument(r'--no-default-browser-check')
     # option.add_argument(r'--disable-background-networking')
