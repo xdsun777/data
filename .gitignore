@@ -11,6 +11,8 @@ _data
 *.sqbpro
 *.csv
 source/
+*.png
+*.txt
 # Distribution / packaging
 .Python
 build/
