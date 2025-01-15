@@ -100,10 +100,10 @@ def fans_components():
     driver = setup()
 
     if os.path.isfile('./fans.json'):
-        with open('.fans.json','r') as f:
-            fansJ = f.read()
+        with open('fans.json','r') as f:
+            fansJ = json.loads(f.read())
     else:
-        fansJ = fans_json_init
+        fansJ = json.loads(fans_json_init)
 
     if fansJ['status'] == 0:
         r = fans(driver, init_url)
@@ -144,7 +144,7 @@ def setup():
     else:
         option.add_argument(r'user-data-dir=C:\Users\ly\Documents\cached_google')
         option.binary_location = r'C:\Program Files\Google\Chrome Dev\Application\chrome.exe'
-        service.executable_path = r'C:\Users\ly\Documents\cached_google\chromedriver-win64'
+        service.executable_path = r'C:\Users\ly\Documents\chromedriver-win64\chromedriver.exe'
     # option.add_argument("--disable-background-network-ingestion")
     # option.add_argument(r'--no-default-browser-check')
     # option.add_argument(r'--disable-background-networking')
@@ -180,7 +180,7 @@ def fans(driver,
         time.sleep(2)
         if driver.find_elements(by=By.CLASS_NAME, value='i5U4dMnB') == []:
             print("隐私用户")
-            continue
+            break
         while True:
             time.sleep(2)
             if driver.find_elements(by=By.CLASS_NAME, value='vc-captcha-close-btn') != []:  # 检测验证
