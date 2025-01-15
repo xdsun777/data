@@ -5,7 +5,7 @@ FILED_ZhiBo = ['id','主播昵称','用户昵称','勋章等级','动作','抖�
 """插入直播数据excel表的表头数据"""
 FILED_FenSi = ['昵称', 'UID', '简介', 'sec_uid', '抖音号', '精准', '蓝V认证', '粉丝数', '创建时间', 'form']
 
-FILED_PINGLUN = ['视频链接','时间','昵称','评论内容','uid','抖音号','性别','简介','粉丝','关注','精准','头像' ,'sec_uid','创建时间','form','地区']
+FILED_PINGLUN = ['视频链接','时间','昵称','评论内容','uid','抖音号','性别','简介','粉丝','关注','精准','头像' ,'sec_uid','创建时间','地区']
 
 class Read:
     def __init__(self, excel_path: str):
@@ -98,7 +98,7 @@ class Write:
 
 if __name__ == '__main__':
     start = time.time()
-    ['1', 'https://www.douyin.com/channel/300203?modal_id=7453068664078650660', '2024-12-27 23:33:55','家美扫天下（郴州）', '这样洗能洗干净吗？', '4073058105819598', '42279691464', '男', '湖南','.我是一个拿扫把扫地的家政人\n??分享酒店大型油烟系统清洗技术\n??分享酒店集中空调体系清洗技术\n?分享酒店大型水晶灯免拆洗技术\n????创业十年从一个小白到行业导师\n????经历了人生的酸甜苦辣精辟独到\n????能解决各种难题各种清洗技术拓客思维','69', '43', '','https://p26.douyinpic.com/aweme/100x100/aweme-avatar/tos-cn-i-0813c001_ogoCA9FbDqOleAAIEncK9iVngD4ACWAcVf6JIA.jpeg?from=3067671334','MS4wLjABAAAA_boATy3tzd89bbfKSE282OHjsGbLoa5V6_3m-8yO4eWvSXnDYaqp9A_OVU9aEPxm']
+
     r = Read('test_data/评论区采集.xlsx')
     print(r.get_all_data())
 

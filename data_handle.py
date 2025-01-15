@@ -75,18 +75,10 @@ class DataHandle:
                 f.append(self.create_time)
 
                 # 主播昵称
-                if "10002" in f[0] or "10005" in f[0]:
+                if "10002" in f[0] or "10005" in f[0] or "10008" in f[0] or "10014" in f[0]:
                     f.append("猎鹰蒸汽喷抽清洗机厂家")
-                if "10008" in f[0]:
-                    f.append("陕西绿霸高压清洗机")
-                if "10011" in f[0]:
-                    f.append("巴诺德清洗机")
-                if "10014" in f[0]:
-                    f.append("黑猫精英高压商用洗车机")
-                if "10017" in f[0]:
-                    f.append("奔启洗车机—工厂")
-                if "10020" in f[0]:
-                    f.append("KARCHER卡赫汽车用品旗舰店")
+                else:
+                    f.append("猎鹰热清洗设备厂家")
                 # 省份
                 if s_result is None:
                     f.append("其他地区")
@@ -118,7 +110,7 @@ class DataHandle:
         all_data = []
         for i in self._data:
             i[14] = "https://www.douyin.com/user/"+i[14]
-            i.append(time.time())
+            i.append(time.strftime('%Y-%m-%d %H:%M:%S'))
             # i.append(i[8])
             i.pop(0)
             all_data.append(i)

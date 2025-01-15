@@ -106,7 +106,7 @@ class HandleTool(Sql):
 
 
 def changer_time():
-    ht = HandleTool(table_name="zhibo")
+    ht = HandleTool(table_name="pinglun")
     ht.time_to_convert()
     del ht
 
