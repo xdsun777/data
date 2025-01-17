@@ -268,8 +268,11 @@ def log_handle(driver, log) -> list:
         return fans_list
 
 
+
+def clean_secuid():
+    pass
 # setup()
-fans_components()
+# fans_components()
 
 # 昵称	            UID	                 简介	                  SECUID	抖音号	        精准	   蓝V认证	    粉丝数            关注数量
 # 猎鹰热清洗设备厂家	1992781461457348	环境清洁综合解决方案服务商。	MS4wLjABAA	vlieyinggaoya		   蓝V	        7383             4075

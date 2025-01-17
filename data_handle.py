@@ -11,10 +11,10 @@ class DataHandle:
     def __dir__(self):
         pass
     def __init__(self,origin_data):
-        if type(origin_data) is list and type(origin_data[0]) is list:
+        if type(origin_data) is list:
             self._data = origin_data
         else:
-            print("数据必须是二维list类型")
+            print("数据必须是list类型")
             exit(-1)
         self._final_data = None
         self._temp_data = None
@@ -136,9 +136,25 @@ class DataHandle:
 
 
     def dy_fans_s(self):
-        pass
+        clean_filed = ['车','洗','高压','清','油','烟','厨','管','道','机','结']
+        clean_data = []
+        with open('secuid.txt', 'w') as f:
+            for i in self._data:
+                d = str(i[0]) + str(i[1])
+                for a in clean_filed:
+                    if a in d:
+                        clean_data.append(i)
+                        f.write(i[-1] + "\n")
+        print(clean_data)
+
 if __name__ == '__main__':
     start = time.time()
-
+    sql_code = """
+    SELECT 昵称,简介,sec_uid FROM "main"."fensi"  GROUP BY "UID";
+    """
+    s = Select(sql_code=sql_code)
+    data = s.get_all_data()
+    hd = DataHandle(data)
+    hd.dy_fans_s()
 
     print("执行时间：",time.time()-start)
