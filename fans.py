@@ -189,7 +189,7 @@ def fans(driver,
             nodes = driver.find_elements(by=By.CLASS_NAME, value='i5U4dMnB')
             try:
                 ActionChains(driver).scroll_to_element(nodes[-1]).perform()
-            except IndexError:
+            finally:
                 driver.find_element(by=By.CLASS_NAME, value='KArYflhI').click()
                 print("超出索引,粉丝关注列表不存在")
                 break
@@ -198,9 +198,13 @@ def fans(driver,
             log_handle_result = log_handle(driver, log)
             if log_handle_result:
                 user_info_list_into_dict += log_handle_result
-                with open(user_info_file, 'a+') as f:
-                    for i in log_handle_result:
-                        f.write(json.dumps(i) + "\n")
+                try:
+                    with open(user_info_file, 'a+') as f:
+                        for i in log_handle_result:
+                            f.write(json.dumps(i) + "\n")
+                except OSError:
+                    with open('./fans_info/.txt','a+') as f:
+                        f.write(json.dumps(i)+"\n")
             if len(node_list) == len(nodes):
                 break
             node_list = nodes
