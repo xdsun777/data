@@ -12,6 +12,8 @@ import time
 import sys
 import re
 
+from sql import Insert
+
 url = "https://www.douyin.com/aweme/v1/web/user/following/list/?device_platform=webapp&aid=6383&channel=channel_pc_web&user_id=2122537659534131&sec_user_id=MS4wLjABAAAAnoZ9Rnmr6kvxgM3wb2IBMYeCj6gttYhW-7zlOepjxch87F9E62f8TgkqMoUqy6d3&offset=0&min_time=0&max_time=1736319532&count=20&source_type=1&gps_access=0&address_book_access=0&is_top=1&update_version_code=170400&pc_client_type=1&pc_libra_divert=Linux&version_code=170400&version_name=17.4.0&cookie_enabled=true&screen_width=1536&screen_height=864&browser_language=zh&browser_platform=Linux+x86_64&browser_name=Chrome&browser_version=131.0.0.0&browser_online=true&engine_name=Blink&engine_version=131.0.0.0&os_name=Linux&os_version=x86_64&cpu_core_num=8&device_memory=8&platform=PC&downlink=10&effective_type=4g&round_trip_time=50&webid=7454097220578002451&uifid=e75c56bdf97dd123c08792ffa35cba4de8d74d7b2bc4961ed76373e52a768f56a3cf650b3477952e13a9bbc61c81ecdab6017fd1f7dde93766cec15cf57aa04fd5357e75aab09bc37f0338ffa81a8093ec551acd29c24077875a27598d9ae85514b88b1c2a22c832c9aa5a1d1af78a40c14479468e3c55f5df1395cecc515027aa0a95cd8af35d75cb56086b073af65e84e3a93b266b413a76641048260553e1&msToken=72HkCZ22PyiV-UWCPJqN9v9el__vSF6xKSOnkjq_xdqf-SyOkFmOsYkX2xrIMqh_b_gM-82T4qrX0abP8ipY5ohal7EumeHKNl9tiyxqD96SG9e1bgGZa744o5dO1vprx6PVRaD9oESvhVwgkcev1GqMaJC1crn9bG0_UIK1vtm4&a_bogus=Ej45hHW7OoQbKd%2FS8csz9V9legV%2FrTSy%2FeioWHoP9NKGGqUb28PBineIbowK4Tv4FSpiweAHUdPMbndbO4X0ZHnkumhkSgkRTtAIIwfo81JdbBJgV1W2ejbEKi4YWAsPKAIJNaEXX0UL1gcfZNcsWFFy9AeJ-%2FR8zqa6pP4g7x8BhemxV2xyTauzxiGe--%2FIsjW%3D&verifyFp=verify_m5ap3bbt_q3cr7vTt_OmLh_40eN_8tXI_C7e4phePvILG&fp=verify_m5ap3bbt_q3cr7vTt_OmLh_40eN_8tXI_C7e4phePvILG"
 
 hander_string = """:authority:
@@ -94,16 +96,18 @@ fans_json_init = {
 
 # 粉丝关注组件
 def fans_components():
-    init_url = "https://www.douyin.com/user/MS4wLjABAAAA3Q_dDfe9fUyv98XebwPhggjNiB7hA2PxfKPH-kQytVw?from_tab_name=main&vid=7443028889464622395"
-    # init_url="https://www.douyin.com/user/MS4wLjABAAAAGRXX0YDHtAKwELlQ4IBx-PPXgrzW9l0A7Obb2YdnYh03KegT0uzE-vWjEkfptEBc?from_tab_name=main"
-    # init_url = "https://www.douyin.com/user/MS4wLjABAAAAl2tNkF2zDV3vcvxk4BnOEek1bGgfdLsoAVEXZTWWpD3NNa4Fvz1p77mkxHhaPOOy"
+    # init_url = "https://www.douyin.com/user/MS4wLjABAAAA3Q_dDfe9fUyv98XebwPhggjNiB7hA2PxfKPH-kQytVw?from_tab_name=main&vid=7443028889464622395"
+    init_url= "https://www.douyin.com/user/MS4wLjABAAAAt2h-rksoxNI7ECRDESz2NjbF8unEM1vCAZH0YVNrUwM"
+
+
+
     driver = setup()
 
     if os.path.isfile('./fans.json'):
         with open('fans.json','r') as f:
             fansJ = json.loads(f.read())
     else:
-        fansJ = json.loads(fans_json_init)
+        fansJ = fans_json_init
 
     if fansJ['status'] == 0:
         r = fans(driver, init_url)
@@ -165,9 +169,9 @@ def fans(driver,
     driver.get(url)
 
     title = driver.title
-    if os.path.isdir('./fans_info') is False:
-        os.mkdir("./fans_info")
-    user_info_file = os.path.join("./fans_info", title + ".txt")
+    if os.path.isdir('fans_infobak') is False:
+        os.mkdir("fans_infobak")
+    user_info_file = os.path.join("fans_infobak", title + ".txt")
     print("保存在:", user_info_file)
     user_info_list_into_dict = []
 
@@ -188,8 +192,9 @@ def fans(driver,
 
             nodes = driver.find_elements(by=By.CLASS_NAME, value='i5U4dMnB')
             try:
+                print(nodes[-1].text)
                 ActionChains(driver).scroll_to_element(nodes[-1]).perform()
-            finally:
+            except:
                 driver.find_element(by=By.CLASS_NAME, value='KArYflhI').click()
                 print("超出索引,粉丝关注列表不存在")
                 break
@@ -203,7 +208,7 @@ def fans(driver,
                         for i in log_handle_result:
                             f.write(json.dumps(i) + "\n")
                 except OSError:
-                    with open('./fans_info/.txt','a+') as f:
+                    with open('fans_infobak/.txt', 'a+') as f:
                         f.write(json.dumps(i)+"\n")
             if len(node_list) == len(nodes):
                 break
@@ -270,7 +275,25 @@ def log_handle(driver, log) -> list:
 
 
 def clean_secuid():
-    pass
+    clean_data = []
+    clean_filed = ['车', '洗', '高压', '清', '油', '烟', '厨', '管', '道', '机', '结']
+    if os.path.isdir('fans_infobak'):
+        files = [os.path.join('fans_infobak', i) for i in os.listdir('fans_infobak') if i.endswith('.txt')]
+        for i in files:
+            with open(i,'r') as f:
+                da = f.readlines()
+                for x in da:
+                    js = json.loads(x)
+                    if js['uid'] not in clean_data:
+                        d = str(js['nickname']) + str(js['sec_uid'])
+                        for a in clean_filed:
+                            if a in d:
+                                with open('json2excel.txt','a+') as f:
+                                    f.write(x)
+                                clean_data.append(i)
+    # insert = Insert(insert_data=)
+
+clean_secuid()
 # setup()
 # fans_components()
 
