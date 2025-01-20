@@ -1,16 +1,13 @@
-from selenium.webdriver.common.actions.wheel_input import ScrollOrigin
-from pprint import pprint
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver import ActionChains
-from selenium.webdriver.common.by import By
+import json
+import os.path
+import sys
+import time
+
 from selenium import webdriver
 from selenium.common import *
-import os.path
-import json
-import time
-import sys
-import re
-
+from selenium.webdriver import ActionChains
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 
 GLOBAL_FANS_URL_LIST = []
@@ -23,6 +20,7 @@ init_fans_str = '''{
     "context": []
 }
 '''
+
 
 def setup():
     service = Service()
@@ -51,7 +49,9 @@ def setup():
 def teardown(driver):
     driver.quit()
 
-def init_fans_json(url=None):
+
+# 粉丝关注组件
+def fans_component(url=None):
     driver = setup()
 
     if os.path.isfile('fans.json'):
@@ -66,13 +66,13 @@ def init_fans_json(url=None):
                 f.write(init_fans_str)
             else:
                 print(f"采集链接:{fansJ['context'][fansJ['count']]}")
-                for i,T_url in enumerate(fansJ['context']):
+                for i, T_url in enumerate(fansJ['context']):
                     if i == fansJ['count']:
                         fansJ['count'] = i
                         f.write(json.dumps(fansJ))
                         fans(driver, T_url['sec_uid'])
     elif url is not None:
-        fansJ =json.loads(init_fans_str)
+        fansJ = json.loads(init_fans_str)
         r = fans(driver, url)
         for i, t in enumerate(r):
             fans(driver, t['sec_uid'])
@@ -82,40 +82,6 @@ def init_fans_json(url=None):
             fansJ['total'] = len(r)
             fansJ['count'] = i
             fansJ['context'] = r
-            with open('fans.json', 'w') as f:
-                f.write(json.dumps(fansJ))
-
-
-# 粉丝关注组件
-def fans_components(init_url):
-    driver = setup()
-
-    if os.path.isfile('./fans.json'):
-        with open('fans.json', 'r') as f:
-            fansJ = json.loads(f.read())
-    else:
-        fansJ = json.loads(init_fans_json)
-
-    if fansJ['status'] == 0:
-        r = fans(driver, init_url)
-        for i, t in enumerate(r):
-            fans(driver, t['sec_uid'])
-
-            fansJ['homeUrl'] = init_url
-            fansJ['status'] = 1
-            fansJ['total'] = len(r)
-            fansJ['count'] = i
-            fansJ['context'] = r
-            with open('fans.json', 'w') as f:
-                f.write(json.dumps(fansJ))
-    else:
-        count = fansJ['count']
-        for i, t in enumerate(fansJ['context'][fansJ['count']:fansJ['total']]):
-            if i < count:
-                continue
-            fans(driver, t['sec_uid'])
-            fansJ['status'] = 1
-            fansJ['count'] = i
             with open('fans.json', 'w') as f:
                 f.write(json.dumps(fansJ))
 
@@ -252,15 +218,9 @@ tip = """***************************
 ***************************
 """
 
-
-
-
-    # option.add_argument(f'user-data-dir=C:{os.environ["HOMEPATH"]}\Documents\cached_google')
-    # option.binary_location = f'C:\Program Files\Google\Chrome Dev\Application\chrome.exe'
-    # service.executable_path = f'C:{os.environ["HOMEPATH"]}\Documents\chromedriver-win64\chromedriver.exe'
-
-
-
+# option.add_argument(f'user-data-dir=C:{os.environ["HOMEPATH"]}\Documents\cached_google')
+# option.binary_location = f'C:\Program Files\Google\Chrome Dev\Application\chrome.exe'
+# service.executable_path = f"C:{os.environ['HOMEPATH']}\Documents\chromedriver-win64\chromedriver.exe"
 
 
 if __name__ == '__main__':
@@ -282,14 +242,11 @@ if __name__ == '__main__':
             print("从中断开始")
             if os.path.isfile('fans.json'):
                 print("fans.json文件存在")
-                init_fans_json()
+                fans_component()
             else:
                 print("fans.json文件不存在")
                 exit(0)
         elif "https://" in args[1]:
-            init_fans_json(args[1])
+            fans_component(args[1])
     except IndexError:
         print(tip)
-
-
-
