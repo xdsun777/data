@@ -1,16 +1,21 @@
+import json
+import os.path
 from binascii import a2b_qp
 
 from temp_data import city_data
 # noinspection PyUnresolvedReferences
-import requests,time
+import requests, time
 from excel import *
 from sql import *
 
+
 class DataHandle:
     """数据处理类"""
+
     def __dir__(self):
         pass
-    def __init__(self,origin_data):
+
+    def __init__(self, origin_data):
         if type(origin_data) is list:
             self._data = origin_data
         else:
@@ -20,7 +25,6 @@ class DataHandle:
         self._temp_data = None
 
         self.create_time = time.strftime('%Y-%m-%d %H:%M:%S')
-
 
     @staticmethod
     def get_place(phone):
@@ -34,7 +38,6 @@ class DataHandle:
         except AttributeError:
             print("data没有city属性，返回空")
             return None
-
 
     @staticmethod
     def qx_to_s(qx):
@@ -87,8 +90,7 @@ class DataHandle:
             all_data.append(f)
         return all_data
 
-
-    def handler_fensi(self,from_data,create_time=None):
+    def handler_fensi(self, from_data, create_time=None):
         """
             昵称	UID	简介	SECUID	抖音号	精准	蓝V认证	粉丝数 创建时间 from
             粉丝关注列表数据处理
@@ -109,7 +111,7 @@ class DataHandle:
         """视频链接,时间,昵称,评论内容,uid,抖音号,性别,简介,粉丝,关注,精准,头像 ,sec_uid,创建时间,地区"""
         all_data = []
         for i in self._data:
-            i[14] = "https://www.douyin.com/user/"+i[14]
+            i[14] = "https://www.douyin.com/user/" + i[14]
             i.append(time.strftime('%Y-%m-%d %H:%M:%S'))
             # i.append(i[8])
             i.pop(0)
@@ -134,9 +136,8 @@ class DataHandle:
                         f.write(i[-1] + "\n")
         print(len(temp))
 
-
-    def dy_fans_s(self):
-        clean_filed = ['车','洗','高压','清','油','烟','厨','管','道','机','结']
+    def dy_fans_clean(self):
+        clean_filed = ['车', '洗', '高压', '清', '油', '烟', '厨', '管', '道', '机', '结']
         clean_data = []
         with open('secuid.txt', 'w') as f:
             for i in self._data:
@@ -147,14 +148,51 @@ class DataHandle:
                         f.write(i[-1] + "\n")
         print(clean_data)
 
+    def dy_fans_json2xsl(self, fans_info):
+        data_list = []
+        now_time = time.strftime('%y-%m-%d')
+        if os.path.isdir(fans_info):
+            for i in os.listdir(fans_info):
+                if i.endswith('.txt') and os.path.isfile(os.path.join(fans_info, i)):
+                    with open(os.path.join(fans_info, i), 'r') as f:
+                        jsd = f.readlines()
+                        for x in jsd:
+                            x = json.loads(x)
+                            data = [x['nickname'], x['uid'], x['signature'], x['sec_uid'], x['unique_id'], '',
+                                    x['is_biz_account'], x['follower_count'], now_time]
+                            data_list.append(data)
+
+        if data_list:
+            ex = Write('uid.xlsx', FILED_FenSi, data_list)
+            ex.write_fensi_data()
+
+    @staticmethod
+    def clean_txt(fans_info):
+        clean_data = []
+        clean_filed = ['车', '洗', '高压', '清', '油', '烟', '厨', '管', '道', '机', '结']
+        if os.path.isdir(fans_info):
+            files = [os.path.join(fans_info, i) for i in os.listdir(fans_info) if i.endswith('.txt')]
+            for i in files:
+                with open(i, 'r') as f:
+                    da = f.readlines()
+                    for x in da:
+                        js = json.loads(x)
+                        if js['uid'] not in clean_data:
+                            d = str(js['nickname']) + str(js['sec_uid'])
+                            for a in clean_filed:
+                                if a in d:
+                                    with open('json2excel.txt', 'a+') as f:
+                                        f.write(x)
+                                    clean_data.append(i)
+
 if __name__ == '__main__':
     start = time.time()
     sql_code = """
     SELECT 昵称,简介,sec_uid FROM "main"."fensi"  GROUP BY "UID";
     """
-    s = Select(sql_code=sql_code)
-    data = s.get_all_data()
-    hd = DataHandle(data)
-    hd.dy_fans_s()
+    # s = Select(sql_code=sql_code)
+    # data = s.get_all_data()
+    hd = DataHandle([])
+    hd.dy_fans_json2xsl(fans_info='source/temp')
 
-    print("执行时间：",time.time()-start)
+    print("执行时间：", time.time() - start)
