@@ -1,6 +1,5 @@
 from selenium.webdriver.common.actions.wheel_input import ScrollOrigin
 from pprint import pprint
-from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
@@ -11,6 +10,8 @@ import json
 import time
 import sys
 import re
+
+from selenium.webdriver.support.wait import WebDriverWait
 
 GLOBAL_FANS_URL_LIST = []
 errors = [NoSuchElementException, ElementNotInteractableException]
@@ -35,7 +36,7 @@ def setup():
         option.binary_location = r'/home/charm/onlyone/pro/douyin_sqlite_bak/selenium/chrome/linux64/131.0.6778.264/chrome'
         service.executable_path = '/home/charm/onlyone/pro/douyin_sqlite_bak/selenium/chromedriver/linux64/131.0.6778.264/chromedriver'
     else:
-        option.add_argument(f'user-data-dir={os.environ["HOME"]}\Documents\cached_google')
+        option.add_argument(f'user-data-dir=C:{os.environ["HOMEPATH"]}\Documents\cached_google')
         option.binary_location = f'C:\Program Files\Google\Chrome Dev\Application\chrome.exe'
         service.executable_path = f'C:{os.environ["HOMEPATH"]}\Documents\chromedriver-win64\chromedriver.exe'
     # option.add_argument("--disable-background-network-ingestion")
@@ -70,7 +71,6 @@ def init_fans_json(url=None):
                         fansJ['count'] = i
                         f.write(json.dumps(fansJ))
                         fans(driver, T_url['sec_uid'])
-
     elif url is not None:
         fansJ =json.loads(init_fans_str)
         r = fans(driver, url)
@@ -84,6 +84,7 @@ def init_fans_json(url=None):
             fansJ['context'] = r
             with open('fans.json', 'w') as f:
                 f.write(json.dumps(fansJ))
+
 
 # 粉丝关注组件
 def fans_components(init_url):
@@ -251,10 +252,31 @@ tip = """***************************
 ***************************
 """
 
-if __name__ == '__main__':
-    args = sys.argv
 
+
+
+    # option.add_argument(f'user-data-dir=C:{os.environ["HOMEPATH"]}\Documents\cached_google')
+    # option.binary_location = f'C:\Program Files\Google\Chrome Dev\Application\chrome.exe'
+    # service.executable_path = f'C:{os.environ["HOMEPATH"]}\Documents\chromedriver-win64\chromedriver.exe'
+
+
+
+
+
+if __name__ == '__main__':
     try:
+        if os.path.isfile(f'C:{os.environ["HOMEPATH"]}\Documents\chromedriver-win64\chromedriver.exe') is False:
+            os.mkdir(f'C:{os.environ["HOMEPATH"]}\Documents\chromedriver-win64')
+            with open('chromedriver.exe','rb') as f:
+                with open(f'C:{os.environ["HOMEPATH"]}\Documents\chromedriver-win64\chromedriver.exe','wb') as exe:
+                    exe.write(f.read())
+        if os.path.isdir(f'C:{os.environ["HOMEPATH"]}\Documents\cached_google') is False:
+            os.mkdir(f'C:{os.environ["HOMEPATH"]}\Documents\cached_google')
+        if os.path.isfile(f'C:\Program Files\Google\Chrome Dev\Application\chrome.exe') is False:
+            print("谷歌浏览器")
+            exit(0)
+
+        args = sys.argv
         if args[1] == 'p':
             print("从中断开始")
             if os.path.isfile('fans.json'):
@@ -265,6 +287,8 @@ if __name__ == '__main__':
                 exit(0)
         elif "https://" in args[1]:
             init_fans_json(args[1])
-            # fans_components(args[1])
     except IndexError:
         print(tip)
+
+
+
