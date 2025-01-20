@@ -274,7 +274,7 @@ if __name__ == '__main__':
             if os.path.isdir(f'C:{os.environ["HOMEPATH"]}\Documents\cached_google') is False:
                 os.mkdir(f'C:{os.environ["HOMEPATH"]}\Documents\cached_google')
             if os.path.isfile(f'C:{os.environ["HOMEPATH"]}\Documents\chrome-win64\chrome.exe') is False:
-                print(f'请安装谷歌浏览器到C:{os.environ["HOMEPATH"]}\Documents\chrome-win64\chrome.exe')
+                print(f'请安装谷歌浏览器到:C:{os.environ["HOMEPATH"]}\Documents\chrome-win64\chrome.exe')
                 exit(0)
 
         args = sys.argv
