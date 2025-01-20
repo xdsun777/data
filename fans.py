@@ -37,7 +37,7 @@ def setup():
         service.executable_path = '/home/charm/onlyone/pro/douyin_sqlite_bak/selenium/chromedriver/linux64/131.0.6778.264/chromedriver'
     else:
         option.add_argument(f'user-data-dir=C:{os.environ["HOMEPATH"]}\Documents\cached_google')
-        option.binary_location = f'C:\Program Files\Google\Chrome Dev\Application\chrome.exe'
+        option.binary_location = f'C:{os.environ["HOMEPATH"]}\Documents\chrome-win64\chrome.exe'
         service.executable_path = f'C:{os.environ["HOMEPATH"]}\Documents\chromedriver-win64\chromedriver.exe'
     # option.add_argument("--disable-background-network-ingestion")
     # option.add_argument(r'--no-default-browser-check')
@@ -273,8 +273,8 @@ if __name__ == '__main__':
                         exe.write(f.read())
             if os.path.isdir(f'C:{os.environ["HOMEPATH"]}\Documents\cached_google') is False:
                 os.mkdir(f'C:{os.environ["HOMEPATH"]}\Documents\cached_google')
-            if os.path.isfile(f'C:\Program Files\Google\Chrome Dev\Application\chrome.exe') is False:
-                print("谷歌浏览器")
+            if os.path.isfile(f'C:{os.environ["HOMEPATH"]}\Documents\chrome-win64\chrome.exe') is False:
+                print(f'请安装谷歌浏览器到C:{os.environ["HOMEPATH"]}\Documents\chrome-win64\chrome.exe')
                 exit(0)
 
         args = sys.argv
