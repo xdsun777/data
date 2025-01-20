@@ -265,16 +265,17 @@ tip = """***************************
 
 if __name__ == '__main__':
     try:
-        if os.path.isfile(f'C:{os.environ["HOMEPATH"]}\Documents\chromedriver-win64\chromedriver.exe') is False:
-            os.mkdir(f'C:{os.environ["HOMEPATH"]}\Documents\chromedriver-win64')
-            with open('chromedriver.exe','rb') as f:
-                with open(f'C:{os.environ["HOMEPATH"]}\Documents\chromedriver-win64\chromedriver.exe','wb') as exe:
-                    exe.write(f.read())
-        if os.path.isdir(f'C:{os.environ["HOMEPATH"]}\Documents\cached_google') is False:
-            os.mkdir(f'C:{os.environ["HOMEPATH"]}\Documents\cached_google')
-        if os.path.isfile(f'C:\Program Files\Google\Chrome Dev\Application\chrome.exe') is False:
-            print("谷歌浏览器")
-            exit(0)
+        if sys.platform != 'linux':
+            if os.path.isfile(f'C:{os.environ["HOMEPATH"]}\Documents\chromedriver-win64\chromedriver.exe') is False:
+                os.mkdir(f'C:{os.environ["HOMEPATH"]}\Documents\chromedriver-win64')
+                with open('chromedriver.exe', 'rb') as f:
+                    with open(f'C:{os.environ["HOMEPATH"]}\Documents\chromedriver-win64\chromedriver.exe', 'wb') as exe:
+                        exe.write(f.read())
+            if os.path.isdir(f'C:{os.environ["HOMEPATH"]}\Documents\cached_google') is False:
+                os.mkdir(f'C:{os.environ["HOMEPATH"]}\Documents\cached_google')
+            if os.path.isfile(f'C:\Program Files\Google\Chrome Dev\Application\chrome.exe') is False:
+                print("谷歌浏览器")
+                exit(0)
 
         args = sys.argv
         if args[1] == 'p':
