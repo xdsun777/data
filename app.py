@@ -36,16 +36,16 @@ def fensi(input_file="/*test_excel_dir*/",form_user='test'):
 def dy_live(input_files="/*test_excel_dir*/",out_file=f'{time.strftime("%Y-%m-%d")}直播采集.xlsx'):
     # ttime = time.strftime("%Y-%m-%d")
     ttime = '2025-01-15' #SELECT "_rowid_",* FROM  "main"."zhibo2" WHERE "时间" REGEXP '2024-12-2[01234]' GROUP BY "Uid" ORDER BY "主播昵称";
-    ZHIBO = f'SELECT id,主播昵称,用户昵称,勋章等级,动作,抖音号,sec_uid,uid,简介,粉丝,关注,性别,地区,精准,时间,创建时间,省份 FROM "main"."zhibo" WHERE "时间" REGEXP \'2024-12-2[01234]\' GROUP BY "uid" ORDER BY "省份";'
+    ZHIBO = f'SELECT id,主播昵称,用户昵称,勋章等级,动作,抖音号,sec_uid,uid,简介,粉丝,关注,性别,地区,精准,时间,创建时间,省份 FROM "main"."zhibo" WHERE "时间" REGEXP \'2025-01-20\' GROUP BY "uid" ORDER BY "省份";'
 
-    '''sql:自由组合'''
-    read_data = Read(input_files)
-    dh = DataHandle(origin_data=read_data.get_all_data())
-    i=Insert(insert_data=dh.handle_zhibo())
-    i.insert_dy_live_data()
-    del i
+    # read_data = Read(input_files)
+    # dh = DataHandle(origin_data=read_data.get_all_data())
+    # i=Insert(insert_data=dh.handle_zhibo())
+    # i.insert_dy_live_data()
+    # del i
     s = Select(sql_code=ZHIBO)
     data = s.get_all_data()
+    print(data)
     w = Write(excel_file_name=out_file, filed=FILED_ZhiBo, data=data)
     w.write_table_all_data()
 
@@ -83,7 +83,7 @@ def fan_s():
 if __name__ == '__main__':
     start = time.time()
     # fan_s()
-    dy_live(input_files=r'C:\Users\ly\Desktop\work\source\ly直播采集\20250116直播间采集结果.xlsx', out_file='20250113-16直播数据.xlsx')
+    dy_live(input_files=r'C:\Users\ly\Desktop\work\source\ly直播采集\20250120直播间采集结果.xlsx', out_file='20250120直播数据.xlsx')
     # fensi(input_file='C:\\Users\\ly\\Desktop\\work\\source\\丁羽欣\\粉丝关注采集\\0110爱可生大型油烟机清洗维修培训评论采集结果.xlsx', form_user='丁羽欣')
     # pinglun(input_files="C:\\Users\\ly\\Desktop\\work\\source\\张伦\\视频评论采集\\20250114下陆区绿一源环保清洗经营部评论采集结果.xlsx",form='张伦')
 
