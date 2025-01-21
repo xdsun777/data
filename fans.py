@@ -197,10 +197,6 @@ def log_handle(driver, log) -> list:
         return fans_list
 
 
-def clean_secuid():
-    pass
-
-
 # 昵称	            UID	                 简介	                  SECUID	抖音号	        精准	   蓝V认证	    粉丝数            关注数量
 # 猎鹰热清洗设备厂家	1992781461457348	环境清洁综合解决方案服务商。	MS4wLjABAA	vlieyinggaoya		   蓝V	        7383             4075
 # nickname          uid                 signature               sec_uid     unique_id                           follower_count  following_count
@@ -222,6 +218,10 @@ tip = """***************************
 # option.binary_location = f'C:\Program Files\Google\Chrome Dev\Application\chrome.exe'
 # service.executable_path = f"C:{os.environ['HOMEPATH']}\Documents\chromedriver-win64\chromedriver.exe"
 
+def txt_data_clean(dir='fans_info'):
+    if os.path.isdir(dir):
+        fd = [os.path.join(dir,i) for i in os.listdir(dir) if i.endswith('.txt')]
+        print(fd)
 
 if __name__ == '__main__':
     try:
