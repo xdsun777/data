@@ -11,7 +11,8 @@ def get_excel_file(dir='.'):
 
 def get_txt_file(dir='.'):
     if os.path.isdir(dir):
-        return [os.path.join(dir, i) for i in os.listdir(dir) if i.endswith('.txt') and i != 'key.txt']
+        return [os.path.join(dir, i) for i in os.listdir(dir) if
+                i.endswith('.txt') and i != 'key.txt' and i != 'url.txt']
 
 
 def read(file) -> list:
@@ -55,7 +56,7 @@ def filter_data(data_i: list) -> bool:
 if __name__ == '__main__':
     if not os.path.isdir('output'):
         os.mkdir('output')
-
+    urls = []
     for f in get_txt_file(r'.'):
         outfile = os.path.join('output', f)
         count = 0
@@ -74,17 +75,19 @@ if __name__ == '__main__':
                 for n in Js.keys():
                     Js_t.append(Js[n])
 
-                Js_t.insert(5,'')
+                Js_t.insert(5, '')
                 # 筛选数据
                 if os.path.isfile('key.txt'):
                     if filter_data(Js_t):
                         sht.append(Js_t)
                         temp.append(Js['uid'])
                         count += 1
+                        urls.append(Js['SECUID'])
                 else:
                     sht.append(Js_t)
                     temp.append(Js['uid'])
                     count += 1
+                    urls.append(Js['SECUID'])
                 temp.append(Js['uid'])
             # try:
             #     Js = json.loads(i)
@@ -145,13 +148,19 @@ if __name__ == '__main__':
                     if filter_data(u):
                         temp.append(uid_count)
                         temp_data.append(u)
+                        if secuid_count != None:
+                            urls.append(u[secuid_count])
                 else:
                     temp.append(uid_count)
                     temp_data.append(u)
-
+                    if secuid_count != None:
+                        urls.append(u[secuid_count])
                     # 写入数据
         write(temp_data, outfile)
-
         # 数据清洗部分 u
-
         print(f"{outfile}去重完毕:{len(temp)}/{total}")
+
+    with open('url.txt', 'w') as f:
+        for i in set(urls):
+            f.write(i + "\n")
+    print(f'secuid已写入url.txt {len(urls)}条')
