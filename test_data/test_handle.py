@@ -82,12 +82,12 @@ if __name__ == '__main__':
                         sht.append(Js_t)
                         temp.append(Js['uid'])
                         count += 1
-                        urls.append(Js['SECUID'])
+                        urls.append(Js['sec_uid'])
                 else:
                     sht.append(Js_t)
                     temp.append(Js['uid'])
                     count += 1
-                    urls.append(Js['SECUID'])
+                    urls.append(Js['sec_uid'])
                 temp.append(Js['uid'])
             # try:
             #     Js = json.loads(i)
@@ -137,11 +137,14 @@ if __name__ == '__main__':
             if u[uid_count] not in temp:
                 # 去重后的数据处理
                 if jingzhun_count is not None and u[jingzhun_count] != "" and u[jingzhun_count] is not None:
-                    u[jingzhun_count] = u[jingzhun_count].removeprefix(',')
+                    u[jingzhun_count] = str(u[jingzhun_count]).removeprefix(',')
 
                 if secuid_count is not None and u[secuid_count] != "":
-                    if "http" not in u[secuid_count]:
-                        u[secuid_count] = "https://www.douyin.com/user/" + u[secuid_count]
+                    try:
+                        if "http" not in u[secuid_count]:
+                            u[secuid_count] = "https://www.douyin.com/user/" + u[secuid_count]
+                    except:
+                        print(u)
 
                 # 筛选数据
                 if os.path.isfile('key.txt'):
