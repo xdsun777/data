@@ -58,7 +58,7 @@ def teardown(driver):
 
 
 # 粉丝关注组件
-def fans_component(url=None):
+def fans_component(url=None, urlIndex=""):
     driver = setup()
 
     if os.path.isfile('fans.json'):
@@ -76,6 +76,7 @@ def fans_component(url=None):
                 for i, T_url in enumerate(fansJ['context']):
                     if i == fansJ['count']:
                         fansJ['count'] = i
+                        fansJ['urlIndex'] = urlIndex
                         f.write(json.dumps(fansJ))
                         fans(driver, T_url['sec_uid'])
     elif url is not None:
@@ -89,6 +90,7 @@ def fans_component(url=None):
             fansJ['total'] = len(r)
             fansJ['count'] = i
             fansJ['context'] = r
+            fansJ['urlIndex'] = urlIndex
             with open('fans.json', 'w') as f:
                 f.write(json.dumps(fansJ))
 
@@ -221,14 +223,16 @@ tip = """***************************
 ***************************
 """
 
+
 # option.add_argument(f'user-data-dir=C:{os.environ["HOMEPATH"]}\Documents\cached_google')
 # option.binary_location = f'C:\Program Files\Google\Chrome Dev\Application\chrome.exe'
 # service.executable_path = f"C:{os.environ['HOMEPATH']}\Documents\chromedriver-win64\chromedriver.exe"
 
 def txt_data_clean(dir='fans_info'):
     if os.path.isdir(dir):
-        fd = [os.path.join(dir,i) for i in os.listdir(dir) if i.endswith('.txt')]
+        fd = [os.path.join(dir, i) for i in os.listdir(dir) if i.endswith('.txt')]
         print(fd)
+
 
 if __name__ == '__main__':
     try:
@@ -244,19 +248,18 @@ if __name__ == '__main__':
                 print(f'请安装谷歌浏览器到:C:{os.environ["HOMEPATH"]}\Documents\chrome-win64\chrome.exe')
                 exit(0)
 
-
         if os.path.isfile('fans.json'):
             print("fans.json文件存在")
             fans_component()
         else:
             print("fans.json文件不存在")
             if os.path.isfile('url.txt'):
-                with open('url.txt','r',encoding='utf-8') as f:
+                with open('url.txt', 'r', encoding='utf-8') as f:
                     urls = f.readlines()
-                for u in urls:
+                for i, u in urls:
                     print(u)
                     if "https://" in u:
-                       fans_component(u)
+                        fans_component(url=u, urlIndex=i)
             exit(0)
 
         # args = sys.argv
