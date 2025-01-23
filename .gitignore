@@ -8,6 +8,7 @@ __pycache__/
 *.db
 .idea/
 _data
+*.exe
 *.sqbpro
 *.csv
 source/

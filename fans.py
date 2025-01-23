@@ -39,6 +39,12 @@ def setup():
         service.executable_path = f'C:{os.environ["HOMEPATH"]}\Documents\chromedriver-win64\chromedriver.exe'
     option.add_argument(r'--disable-gpu-driver-bug-workarounds')
     option.add_argument(r'--no-default-browser-check')
+    option.add_argument("--headless")  # 使用无头模式
+    option.add_argument("--disable-gpu")  # 适用于 Linux 和 Windows 系统
+    option.add_argument("--no-sandbox")  # Bypass OS security model
+    option.add_argument("start-maximized")  # 启动最大化窗口
+    option.add_argument("--disable-extensions")
+    # option.add_argument("disable-infobars")
     # option.add_argument("--disable-background-network-ingestion")
     # option.add_argument(r'--disable-background-networking')
 
