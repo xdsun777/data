@@ -37,10 +37,10 @@ def setup():
         option.add_argument(f'user-data-dir=C:{os.environ["HOMEPATH"]}\Documents\cached_google')
         option.binary_location = f'C:{os.environ["HOMEPATH"]}\Documents\chrome-win64\chrome.exe'
         service.executable_path = f'C:{os.environ["HOMEPATH"]}\Documents\chromedriver-win64\chromedriver.exe'
+    option.add_argument(r'--disable-gpu-driver-bug-workarounds')
+    option.add_argument(r'--no-default-browser-check')
     # option.add_argument("--disable-background-network-ingestion")
-    # option.add_argument(r'--no-default-browser-check')
     # option.add_argument(r'--disable-background-networking')
-    # option.add_argument(r'--disable-gpu-driver-bug-workarounds')
 
     driver = webdriver.Chrome(options=option, service=service)
     return driver
