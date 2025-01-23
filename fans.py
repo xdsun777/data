@@ -225,7 +225,7 @@ def txt_data_clean(dir='fans_info'):
 
 if __name__ == '__main__':
     try:
-        if sys.platform != 'linux':
+        if sys.platform == 'win32':
             if os.path.isfile(f'C:{os.environ["HOMEPATH"]}\Documents\chromedriver-win64\chromedriver.exe') is False:
                 os.mkdir(f'C:{os.environ["HOMEPATH"]}\Documents\chromedriver-win64')
                 with open('chromedriver.exe', 'rb') as f:
@@ -237,16 +237,31 @@ if __name__ == '__main__':
                 print(f'请安装谷歌浏览器到:C:{os.environ["HOMEPATH"]}\Documents\chrome-win64\chrome.exe')
                 exit(0)
 
-        args = sys.argv
-        if args[1] == 'p':
-            print("从中断开始")
-            if os.path.isfile('fans.json'):
-                print("fans.json文件存在")
-                fans_component()
-            else:
-                print("fans.json文件不存在")
-                exit(0)
-        elif "https://" in args[1]:
-            fans_component(args[1])
+
+        if os.path.isfile('fans.json'):
+            print("fans.json文件存在")
+            fans_component()
+        else:
+            print("fans.json文件不存在")
+            if os.path.isfile('url.txt'):
+                with open('url.txt','r',encoding='utf-8') as f:
+                    urls = f.readlines()
+                for u in urls:
+                    print(u)
+                    if "https://" in u:
+                       fans_component(u)
+            exit(0)
+
+        # args = sys.argv
+        # if args[1] == 'p':
+        #     print("从中断开始")
+        #     if os.path.isfile('fans.json'):
+        #         print("fans.json文件存在")
+        #         fans_component()
+        #     else:
+        #         print("fans.json文件不存在")
+        #         exit(0)
+        # elif "https://" in args[1]:
+        #     fans_component(args[1])
     except IndexError:
         print(tip)

@@ -63,7 +63,7 @@ if __name__ == '__main__':
         temp_data = []
         wb = Workbook()
         sht = wb.active
-        sht.append(['昵称', 'UID', '简介', 'SECUID', '抖音号', '精准', '蓝V认证', '粉丝数'])
+        sht.append(['昵称', 'UID', '简介', 'SECUID', '抖音号', '精准', '蓝V认证', '粉丝数', '关注'])
         with open(f, 'r', encoding='utf-8') as x:
             fsL = x.readlines()
             total = len(fsL)
@@ -74,6 +74,7 @@ if __name__ == '__main__':
                 for n in Js.keys():
                     Js_t.append(Js[n])
 
+                Js_t.insert(5,'')
                 # 筛选数据
                 if os.path.isfile('key.txt'):
                     if filter_data(Js_t):

@@ -78,10 +78,12 @@ class DataHandle:
                 f.append(self.create_time)
 
                 # 主播昵称
-                if "10002" in f[0] or "10005" in f[0] or "10008" in f[0] or "10014" in f[0]:
-                    f.append("猎鹰蒸汽喷抽清洗机厂家")
-                else:
-                    f.append("猎鹰热清洗设备厂家")
+                if f[0]:
+                    f.append(f[0].split(' ')[1].strip(')'))
+                # if "10002" in f[0] or "10005" in f[0] or "10008" in f[0] or "10014" in f[0]:
+                #     f.append("猎鹰蒸汽喷抽清洗机厂家")
+                # else:
+                #     f.append("猎鹰热清洗设备厂家")
                 # 省份
                 if s_result is None:
                     f.append("其他地区")
