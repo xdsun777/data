@@ -20,7 +20,7 @@ init_fans_str = '''{
     "context": []
 }
 '''
-
+isyinsi = False
 
 def setup():
     service = Service()
@@ -44,6 +44,7 @@ def setup():
     option.add_argument("--no-sandbox")  # Bypass OS security model
     option.add_argument("--disable-extensions")
     option.add_argument("--enable-unsafe-swiftshader")
+    option.add_argument("--disable-3d-apis")
     # option.add_argument("start-maximized")  # 启动最大化窗口
     # option.add_argument("disable-infobars")
     # option.add_argument("--disable-background-network-ingestion")
@@ -58,8 +59,8 @@ def teardown(driver):
 
 
 # 粉丝关注组件
-def fans_component(url=None, urlIndex=""):
-    driver = setup()
+def fans_component(url=None, urlIndex="",driver=None):
+    driver = driver
 
     if os.path.isfile('fans.json'):
         with open('fans.json', 'r+') as f:
@@ -116,8 +117,11 @@ def fans(driver,
         node_list = []
         time.sleep(2)
         if driver.find_elements(by=By.CLASS_NAME, value='i5U4dMnB') == []:
+
             print("隐私用户")
-            break
+            isyingsi = True
+            continue
+            # break
         while True:
             time.sleep(2)
             if driver.find_elements(by=By.CLASS_NAME, value='vc-captcha-close-btn') != []:  # 检测验证
@@ -178,7 +182,9 @@ def log_handle(driver, log) -> list:
                                  "unique_id": i['unique_id'],
                                  "is_biz_account": is_biz_account,
                                  "follower_count": i['follower_count'],
-                                 "following_count": i['following_count']}
+                                 "following_count": i['following_count'],
+                                 "isyingsi": isyingsi
+                                 }
                     fans_list.append(user_info)
 
             # 关注
@@ -200,7 +206,9 @@ def log_handle(driver, log) -> list:
                                  "unique_id": i['unique_id'],
                                  "is_biz_account": is_biz_account,
                                  "follower_count": i['follower_count'],
-                                 "following_count": i['following_count']}
+                                 "following_count": i['following_count'],
+                                 "isyingsi": isyingsi
+                                 }
                     fans_list.append(user_info)
     if fans_list:
         return fans_list
@@ -212,14 +220,8 @@ def log_handle(driver, log) -> list:
 
 tip = """***************************
 使用方法?
-1.直接采集
-请直接添加dy主页连接
-例如:
-    fans.exe "https://www.douyin.com/user/MS4wLjABAAAA3Q_dDfe9fUyv98XebwPhggjNiB7hA2PxfKPH-kQytVw?from_tab_name=main&vid=7443028889464622395"
 
-2.从上次中断处采集
-例如:
-    fans.exe p
+    fans.exe
 ***************************
 """
 
@@ -232,6 +234,7 @@ def txt_data_clean(dir='fans_info'):
     if os.path.isdir(dir):
         fd = [os.path.join(dir, i) for i in os.listdir(dir) if i.endswith('.txt')]
         print(fd)
+
 
 
 if __name__ == '__main__':
@@ -254,12 +257,14 @@ if __name__ == '__main__':
         else:
             print("fans.json文件不存在")
             if os.path.isfile('url.txt'):
+                driver = setup()
                 with open('url.txt', 'r', encoding='utf-8') as f:
                     urls = f.readlines()
-                for i, u in urls:
+                for i, u in enumerate(urls):
                     print(u)
                     if "https://" in u:
-                        fans_component(url=u, urlIndex=i)
+                        fans_component(url=u, urlIndex=i,driver=driver)
+            else:print("url.txt文件不存在")
             exit(0)
 
         # args = sys.argv
@@ -275,3 +280,4 @@ if __name__ == '__main__':
         #     fans_component(args[1])
     except IndexError:
         print(tip)
+

@@ -1,6 +1,5 @@
-import json
-
 from openpyxl import Workbook, load_workbook
+import json
 import os
 
 
@@ -53,10 +52,13 @@ def filter_data(data_i: list) -> bool:
         return False
 
 
+
 if __name__ == '__main__':
     if not os.path.isdir('output'):
         os.mkdir('output')
     urls = []
+    # 汇总
+    result = []
     for f in get_txt_file(r'.'):
         outfile = os.path.join('output', f)
         count = 0
@@ -64,7 +66,7 @@ if __name__ == '__main__':
         temp_data = []
         wb = Workbook()
         sht = wb.active
-        sht.append(['昵称', 'UID', '简介', 'SECUID', '抖音号', '精准', '蓝V认证', '粉丝数', '关注'])
+        sht.append(['昵称', 'UID', '简介', 'SECUID', '抖音号', '精准', '蓝V认证', '粉丝数', '关注','隐私'])
         with open(f, 'r', encoding='utf-8') as x:
             fsL = x.readlines()
             total = len(fsL)
@@ -83,11 +85,13 @@ if __name__ == '__main__':
                         temp.append(Js['uid'])
                         count += 1
                         urls.append(Js['sec_uid'])
+                        result.append(Js_t)
                 else:
                     sht.append(Js_t)
                     temp.append(Js['uid'])
                     count += 1
                     urls.append(Js['sec_uid'])
+                    result.append(Js_t)
                 temp.append(Js['uid'])
             # try:
             #     Js = json.loads(i)
@@ -134,10 +138,14 @@ if __name__ == '__main__':
         temp = []
         temp_data = [title]
         for u in data:
+            if u['isyinsi'] == True:
+                continue
+
             if u[uid_count] not in temp:
                 # 去重后的数据处理
                 if jingzhun_count is not None and u[jingzhun_count] != "" and u[jingzhun_count] is not None:
                     u[jingzhun_count] = str(u[jingzhun_count]).removeprefix(',')
+
 
                 if secuid_count is not None and u[secuid_count] != "":
                     try:
