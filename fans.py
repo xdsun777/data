@@ -59,8 +59,7 @@ def teardown(driver):
 
 
 # 粉丝关注组件
-def fans_component(url=None, urlIndex="",driver=None):
-    driver = driver
+def fans_component(driver,url=None, urlIndex=""):
 
     if os.path.isfile('fans.json'):
         with open('fans.json', 'r+') as f:
@@ -253,7 +252,8 @@ if __name__ == '__main__':
 
         if os.path.isfile('fans.json'):
             print("fans.json文件存在")
-            fans_component()
+            driver = setup()
+            fans_component(driver=driver)
         else:
             print("fans.json文件不存在")
             if os.path.isfile('url.txt'):
