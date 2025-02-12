@@ -11,6 +11,7 @@ _data
 *.exe
 *.sqbpro
 *.csv
+test_handle
 source/
 *.png
 *.txt
