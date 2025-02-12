@@ -20,7 +20,7 @@ def read(file) -> list:
     return [list(row) for row in sheet.iter_rows(values_only=True)]
 
 
-def write(data_i: list, filename: str = 'output/result.xlsx'):
+def write(data_i: list, filename: str = './output/汇总.xlsx'):
     try:
         wb = Workbook()
         sht = wb.active
@@ -115,6 +115,10 @@ if __name__ == '__main__':
             #     continue
         print(f"{f}已过滤，{count}/{total}")
         wb.save(outfile + '.xlsx')
+        wb.close()
+
+    if result:
+        write(result)
 
     for f in get_excel_file(r'.'):
         outfile = os.path.join('output', f)
@@ -171,7 +175,10 @@ if __name__ == '__main__':
         # 数据清洗部分 u
         print(f"{outfile}去重完毕:{len(temp)}/{total}")
 
-    with open('url.txt', 'w') as f:
-        for i in set(urls):
-            f.write(i + "\n")
-    print(f'secuid已写入url.txt {len(urls)}条')
+    if urls:
+        with open('./output/url.txt', 'w') as f:
+            for i in set(urls):
+                f.write(i + "\n")
+        print(f'secuid已写入url.txt {len(urls)}条')
+    if os.path.isdir('./output') and os.listdir('./output') == []:
+        os.removedirs('./output')
