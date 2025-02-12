@@ -20,7 +20,7 @@ init_fans_str = '''{
     "context": []
 }
 '''
-isyinsi = False
+isyingsi = False
 
 def setup():
     service = Service()
@@ -249,7 +249,7 @@ if __name__ == '__main__':
                 os.mkdir(f'C:{os.environ["HOMEPATH"]}\Documents\cached_google')
             if os.path.isfile(f'C:{os.environ["HOMEPATH"]}\Documents\chrome-win64\chrome.exe') is False:
                 print(f'请安装谷歌浏览器到:C:{os.environ["HOMEPATH"]}\Documents\chrome-win64\chrome.exe')
-                exit(0)
+                sys.exit(0)
 
         if os.path.isfile('fans.json'):
             print("fans.json文件存在")
@@ -265,7 +265,7 @@ if __name__ == '__main__':
                     if "https://" in u:
                         fans_component(url=u, urlIndex=i,driver=driver)
             else:print("url.txt文件不存在")
-            exit(0)
+            sys.exit(0)
 
         # args = sys.argv
         # if args[1] == 'p':
@@ -275,7 +275,7 @@ if __name__ == '__main__':
         #         fans_component()
         #     else:
         #         print("fans.json文件不存在")
-        #         exit(0)
+        #         sys.exit(0)
         # elif "https://" in args[1]:
         #     fans_component(args[1])
     except IndexError:
