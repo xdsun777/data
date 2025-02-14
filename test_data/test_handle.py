@@ -66,6 +66,7 @@ if __name__ == '__main__':
         temp_data = []
         wb = Workbook()
         sht = wb.active
+
         sht.append(['昵称', 'UID', '简介', 'SECUID', '抖音号', '精准', '蓝V认证', '粉丝数', '关注','隐私'])
         with open(f, 'r', encoding='utf-8') as x:
             fsL = x.readlines()

@@ -1,14 +1,16 @@
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.chrome.service import Service
+from openpyxl import Workbook, load_workbook
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from json import JSONDecodeError
 from selenium import webdriver
 from selenium.common import *
-import json, os, sys
-
+import json, os, sys, time
+import openpyxl
 
 errors = [NoSuchElementException, ElementNotInteractableException]
+
 
 # 异常处理
 class Cnm(Exception):
@@ -17,6 +19,38 @@ class Cnm(Exception):
 
 
 # 数据处理
+class DataHandle:
+    def __init__(self, data:list,filename: str = './output/汇总.xlsx'):
+        self.data = data
+        self.filename = filename
+
+    def read(self) -> list:
+        wb = load_workbook(self.filename)
+        sheet = wb.active
+        return [list(row) for row in sheet.iter_rows(values_only=True)]
+
+    def write(self):
+        header_list = ['昵称', 'UID', '简介', 'SECUID', '抖音号', '精准', '蓝V认证', '粉丝数', '关注', '隐私']
+        if os.path.isfile(self.filename):
+            wb = openpyxl.load_workbook(self.filename)
+            sht = wb['fans']
+            max_row = sht.max_row
+            max_col = sht.max_column
+            for i in range(1, max_col + 1, 1):
+                sht.cell(max_row + 1, i).value = self.data[i - 1]
+            wb.save(self.filename)
+        else:
+            try:
+                wb = Workbook()
+                sht = wb.active
+                sht.title = 'fans'
+                sht.append(header_list)
+                for i in self.data:
+                    sht.append(i)
+                wb.save(self.filename)
+            except:
+                print("写入错误")
+                exit(0)
 
 
 # 运行配置
@@ -117,6 +151,9 @@ class RunnerConfig:
 # 数据抓取
 class Cap:
     def __init__(self):
+        self.pub_count = 2
+        self.user_status = True
+        self.user_status_dict = {}
         self.service = Service()
         self.option = webdriver.ChromeOptions()
         cap = {'performance': 'ALL'}
@@ -152,16 +189,113 @@ class Cap:
     def teardown(driver):
         driver.quit()
 
-    @staticmethod
-    def get_data(driver, url):
+    def cap_data(self, driver, log):
+        fans_list = []
+        for i in log:
+            logjson = json.loads(i['message'])['message']
+            if logjson['method'] == 'Network.responseReceived':
+                params = logjson['params']
+                requestUrl = params['response']['url']
+                # 粉丝
+                if 'user/follower/list' in requestUrl:
+                    requestId = params['requestId']
+                    response_body = driver.execute_cdp_cmd('Network.getResponseBody', {'requestId': requestId})
+                    body_data = response_body["body"]
+                    for i in json.loads(body_data)["followers"]:
+                        is_biz_account = False
+                        if i['account_cert_info'] is None:
+                            is_biz_account = True
+                        # user_info = [i['nickname'], i['uid'], i['signature'], "https://www.douyin.com/user/" + i['sec_uid'],
+                        #              i['unique_id'], is_biz_account, i['follower_count'], i['following_count']]
+                        user_info = {"nickname": i['nickname'],
+                                     "uid": i['uid'],
+                                     "signature": i['signature'],
+                                     "sec_uid": "https://www.douyin.com/user/" + i['sec_uid'],
+                                     "unique_id": i['unique_id'],
+                                     "is_biz_account": is_biz_account,
+                                     "follower_count": i['follower_count'],
+                                     "following_count": i['following_count']
+                                     }
+                        fans_list.append(user_info)
+
+                # 关注
+                if 'user/following/list' in requestUrl:
+                    requestId = params['requestId']
+                    response_body = driver.execute_cdp_cmd('Network.getResponseBody', {'requestId': requestId})
+                    body_data = response_body["body"]
+                    for i in json.loads(body_data)["followings"]:
+                        is_biz_account = False
+                        if i['account_cert_info'] is None:
+                            is_biz_account = True
+                        # user_info = [i['nickname'], i['uid'], i['signature'], "https://www.douyin.com/user/" + i['sec_uid'],
+                        #              i['unique_id'], is_biz_account, i['follower_count'], i['following_count']]
+                        # pprint(user_info)
+                        user_info = {"nickname": i['nickname'],
+                                     "uid": i['uid'],
+                                     "signature": i['signature'],
+                                     "sec_uid": "https://www.douyin.com/user/" + i['sec_uid'],
+                                     "unique_id": i['unique_id'],
+                                     "is_biz_account": is_biz_account,
+                                     "follower_count": i['follower_count'],
+                                     "following_count": i['following_count']
+                                     }
+                        fans_list.append(user_info)
+        if fans_list:
+            return fans_list
+
+    def get_data(self, driver, url):
+        user_status = True
         user_info_list_into_dict = []
-        driver.get(url)
-        wait = WebDriverWait(driver, timeout=2, poll_frequency=.2, ignored_exceptions=errors)
-        wait.until(lambda d: driver.find_elements(by=By.CLASS_NAME, value="C1cxu0Vq") or True)
-        text_box = driver.find_elements(by=By.CLASS_NAME, value="C1cxu0Vq")
+        cap_data_count = 0
+        while True:
+            cap_data_total = 0
+            driver.get(url)
+            time.sleep(self.pub_count)
 
+            while driver.find_elements(by=By.CLASS_NAME, value='login-pannel-appear-done'):
+                time.sleep(60)
+                if not driver.find_elements(by=By.CLASS_NAME, value='login-pannel-appear-done'):
+                    break
 
+            wait = WebDriverWait(driver, timeout=2, poll_frequency=.2, ignored_exceptions=errors)
+            wait.until(lambda d: driver.find_elements(by=By.CLASS_NAME, value="C1cxu0Vq") or True)
+            text_box = driver.find_elements(by=By.CLASS_NAME, value="C1cxu0Vq")
+            if text_box != []:
+                for i in text_box[0:2]:
+                    cap_data_total = int(i.text)
+                    if cap_data_total == 0:
+                        continue
+                    i.click()
 
+                    time.sleep(2)
+                    if driver.find_elements(by=By.CLASS_NAME, value='i5U4dMnB') == []:
+                        print("关注粉丝列表为空，无法获取！")
+                        self.user_status_dict[url] = False
+                        continue
+                    self.user_status_dict[url] = True
+
+                    while True:
+                        time.sleep(2)
+                        # TODO 反爬
+                        if driver.find_elements(by=By.CLASS_NAME, value='vc-captcha-close-btn') != []:  # 检测验证
+                            driver.find_element(by=By.CLASS_NAME, value='vc-captcha-close-btn').click()
+
+                        nodes = nodes = driver.find_elements(by=By.CLASS_NAME, value='i5U4dMnB')
+                        try:
+                            ActionChains(driver).scroll_to_element(nodes[-1]).perform()
+                        except:
+                            print("超出索引,粉丝关注列表不存在")
+                            # 关闭粉丝关注弹窗面板
+                            driver.find_element(by=By.CLASS_NAME, value='KArYflhI').click()
+                            break
+                        log = driver.get_log('performance')
+                        cap_result = self.cap_data(driver, log)
+                        if cap_result is None:
+                            break
+                        else:
+                            user_info_list_into_dict += cap_result
+
+                    driver.find_element(by=By.CLASS_NAME, value='KArYflhI').click()
 
 
 def main():
@@ -176,7 +310,7 @@ def main():
 
     if fans_json:
         print(fans_json)
-        c.get_data(driver=driver, url='https://www.douyin.com/user/MS4wLjABAAAAtu9y3Z3_1SWmF27_rxpm0aFjXVRL9-6GXUJetoR05kkPfRIMWJJOQ5k19fkL2BPQ')
+        c.get_data(driver=driver, url='https://www.douyin.com/user/self?from_tab_name=main')
 
 
 if __name__ == '__main__':
