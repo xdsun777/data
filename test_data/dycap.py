@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.chrome.service import Service
 from openpyxl import Workbook, load_workbook
@@ -16,20 +18,22 @@ errors = [NoSuchElementException, ElementNotInteractableException]
 class Cnm(Exception):
     def __init__(self, msg):
         self.msg = f"自定义异常：{msg}\n"
+        super().__init__(self.msg)
 
 
 # 数据处理
 class DataHandle:
-    def __init__(self, data:list,filename: str = './output/汇总.xlsx'):
+    def __init__(self, data: list = [], filename: str = './output/汇总.xlsx'):
+        self.line_context = None
         self.data = data
         self.filename = filename
 
-    def read(self) -> list:
+    def read_excl(self) -> list:
         wb = load_workbook(self.filename)
         sheet = wb.active
         return [list(row) for row in sheet.iter_rows(values_only=True)]
 
-    def write(self):
+    def write_excl(self):
         header_list = ['昵称', 'UID', '简介', 'SECUID', '抖音号', '精准', '蓝V认证', '粉丝数', '关注', '隐私']
         if os.path.isfile(self.filename):
             wb = openpyxl.load_workbook(self.filename)
@@ -52,45 +56,39 @@ class DataHandle:
                 print("写入错误")
                 exit(0)
 
+    def read_txt(self):
+        if os.path.isfile(self.filename):
+            try:
+                with open(self.filename, 'r', encoding='utf-8') as f:
+                    self.line_context = [i.strip('\n') for i in f.readlines()]
+                    return self.line_context
+            except FileExistsError as e:
+                print(e)
+                return False
+        else:
+            raise Cnm(f'{self.filename}文件不存在')
+
+    def write_txt(self):
+        with open(self.filename, 'w', encoding='utf-8') as f:
+            f.write(self.data)
+
 
 # 运行配置
-'''{
-                "config_status": 0, 配置文件状态，0为初始状态，1为中断状态
-                "urls":[], 一级url列表
-                "total": 0, 一级url列表数量
-                "count":0 当前head url在一级列表的位置
-
-                "head_url": "" 当前head的url属于哪一个一级url
-                "head_count":0, # 当前head url在列表中的位置
-
-                "child_urls": [],当前head的粉丝关注列表用户主页的url
-                "child_total": 0, 当前head的粉丝关注列表用户总数
-                "child_count": 0, 当前head的粉丝关注列表的url在总数中的位置
-            }
-            '''
-
-
 class RunnerConfig:
-    def __init__(self, config_file='./fans.json', urls_file='./url.txt', key_file='./key.txt'):
-        self.config = '''{
-                "head_url": "",
-                "head_count":0,
-                "config_status": 0,
-                "child_urls": [],
-                "child_total": 0,
-                "child_count": 0,
-                "urls":[],
-                "total": 0,
-                "count":0
-            }
-            '''
+    def __init__(self, config_file='./fans.json', urls_file='./urls.txt', key_file='./keys.txt'):
+        self.config = {
+            "urls": [],
+            "urls_total": 0,
+            "head_url_for_urls": "",
+            "head_url_for_urls_count": 0
+        }
         self.file_config = config_file
         self.file_urls = urls_file
         self.file_key = key_file
 
         self.runner_config = None
         self.runner_urls = None
-        self.runner_key = None
+        self.runner_keys = None
 
         if not os.path.isdir('./output'):
             os.mkdir('./output')
@@ -99,7 +97,7 @@ class RunnerConfig:
     def init_config(self):
         try:
             with open('./fans.json', 'w', encoding='utf-8') as f:
-                f.write(self.config)
+                f.write(json.dumps(self.config))
                 return True
         except FileExistsError as e:
             print(e)
@@ -127,7 +125,7 @@ class RunnerConfig:
                 except JSONDecodeError as e:
                     print(e)
                     return False
-            elif f_name == 'url.txt':
+            elif f_name == 'urls.txt':
                 try:
                     with open(self.file_urls, 'r', encoding='utf-8') as f:
                         self.runner_urls = [i.strip('\n') for i in f.readlines()]
@@ -135,15 +133,14 @@ class RunnerConfig:
                 except FileNotFoundError as e:
                     print(e)
                     return False
-            elif f_name == 'key.txt':
+            elif f_name == 'keys.txt':
                 try:
                     with open(file, 'r', encoding='utf-8') as f:
-                        self.runner_urls = [i.strip('\n') for i in f.readlines()]
-                        return self.runner_urls
+                        self.runner_keys = [i.strip('\n') for i in f.readlines()]
+                        return self.runner_keys
                 except FileExistsError as e:
                     print(e)
-            else:
-                raise Cnm(f'{file}文件不存在')
+                    return False
         else:
             raise Cnm(f'{file}文件不存在')
 
@@ -151,7 +148,9 @@ class RunnerConfig:
 # 数据抓取
 class Cap:
     def __init__(self):
-        self.pub_count = 2
+        self.cap_data_count = None
+        self.pub_sleep_time = 2
+        self.log = []
         self.user_status = True
         self.user_status_dict = {}
         self.service = Service()
@@ -243,74 +242,107 @@ class Cap:
         if fans_list:
             return fans_list
 
-    def get_data(self, driver, url):
-        user_status = True
-        user_info_list_into_dict = []
-        cap_data_count = 0
+    # 获取网络日志
+    def get_log(self, driver, url):
+        c = 0
         while True:
-            cap_data_total = 0
             driver.get(url)
-            time.sleep(self.pub_count)
+            time.sleep(self.pub_sleep_time)
+            try:
+                wait = WebDriverWait(driver, timeout=2, poll_frequency=.2, ignored_exceptions=errors)
+                wait.until(lambda d: driver.find_elements(by=By.CLASS_NAME, value="C1cxu0Vq") or True)
+                text_box = driver.find_elements(by=By.CLASS_NAME, value="C1cxu0Vq")
+                if text_box != []:
+                    for i in text_box[0:2]:
+                        # 粉丝关注数量为0，就跳过
+                        cap_data_total = int(i.text)
+                        if cap_data_total == 0:
+                            continue
+                        i.click()
 
-            while driver.find_elements(by=By.CLASS_NAME, value='login-pannel-appear-done'):
-                time.sleep(60)
-                if not driver.find_elements(by=By.CLASS_NAME, value='login-pannel-appear-done'):
-                    break
+                        time.sleep(self.pub_sleep_time)
+                        if driver.find_elements(by=By.CLASS_NAME, value='i5U4dMnB') == []:
+                            print("关注粉丝列表为空，无法获取！")
+                            self.user_status_dict[url] = False
+                            continue
+                        self.user_status_dict[url] = True
 
-            wait = WebDriverWait(driver, timeout=2, poll_frequency=.2, ignored_exceptions=errors)
-            wait.until(lambda d: driver.find_elements(by=By.CLASS_NAME, value="C1cxu0Vq") or True)
-            text_box = driver.find_elements(by=By.CLASS_NAME, value="C1cxu0Vq")
-            if text_box != []:
-                for i in text_box[0:2]:
-                    cap_data_total = int(i.text)
-                    if cap_data_total == 0:
-                        continue
-                    i.click()
+                        _count = 0
+                        self.cap_data_count = 0
+                        while _count <= 1:
+                            time.sleep(self.pub_sleep_time)
+                            nodes = driver.find_elements(by=By.CLASS_NAME, value='i5U4dMnB')
+                            if len(nodes) == self.cap_data_count:
+                                _count += 1
+                            self.cap_data_count = len(nodes)
+                            try:
+                                ActionChains(driver).scroll_to_element(nodes[-1]).perform()
+                            except:
+                                print("超出索引,粉丝关注列表不存在")
+                                # 关闭粉丝关注弹窗面板
+                                driver.find_element(by=By.CLASS_NAME, value='KArYflhI').click()
+                                break
+                            # self.log += driver.get_log('performance')
+                            # print(len(self.log))
+                        print("跳出_count循环")
 
-                    time.sleep(2)
-                    if driver.find_elements(by=By.CLASS_NAME, value='i5U4dMnB') == []:
-                        print("关注粉丝列表为空，无法获取！")
-                        self.user_status_dict[url] = False
-                        continue
-                    self.user_status_dict[url] = True
-
-                    while True:
-                        time.sleep(2)
-                        # TODO 反爬
-                        if driver.find_elements(by=By.CLASS_NAME, value='vc-captcha-close-btn') != []:  # 检测验证
-                            driver.find_element(by=By.CLASS_NAME, value='vc-captcha-close-btn').click()
-
-                        nodes = nodes = driver.find_elements(by=By.CLASS_NAME, value='i5U4dMnB')
-                        try:
-                            ActionChains(driver).scroll_to_element(nodes[-1]).perform()
-                        except:
-                            print("超出索引,粉丝关注列表不存在")
-                            # 关闭粉丝关注弹窗面板
-                            driver.find_element(by=By.CLASS_NAME, value='KArYflhI').click()
-                            break
-                        log = driver.get_log('performance')
-                        cap_result = self.cap_data(driver, log)
-                        if cap_result is None:
-                            break
-                        else:
-                            user_info_list_into_dict += cap_result
-
-                    driver.find_element(by=By.CLASS_NAME, value='KArYflhI').click()
+                        driver.find_element(by=By.CLASS_NAME, value='KArYflhI').click()
+                    return driver.get_log('performance')
+                else:
+                    print("粉丝关注列表为空")
+            except:
+                # 检测登录弹窗
+                if driver.find_elements(by=By.CLASS_NAME, value='login-pannel-appear-done') != []:
+                    time.sleep(60)
+                    print("请登录！")
+                    continue
+                # TODO 反爬
+                if driver.find_elements(by=By.CLASS_NAME, value='vc-captcha-close-btn') != []:  # 检测验证
+                    driver.find_element(by=By.CLASS_NAME, value='vc-captcha-close-btn').click()
+                if c >= 2:
+                    return driver.get_log('performance')
+                c += 1
+                print("except:。。。")
 
 
 def main():
-    # 运行条件： url.txt    fans.json     key.txt
-    # 优先运行fans.json,随后运行url.txt,key.txt用于过滤筛选数据
+    # 运行条件： fans.json   uls.txt  keys.txt
+    # 优先运行fans.json,随后运行urls.txt,keys.txt用于过滤筛选数据
     # if os.path.isfile('fans.json'):
+    get_fans = None
+    get_urls = None
+    get_keys = None
     runner = RunnerConfig()
     c = Cap()
-
     driver = c.setup()
-    fans_json = runner.get_('fans.json')
+    try:
+        get_fans = runner.get_('fans.json')
+        get_urls = runner.get_('urls.txt')
+        get_keys = runner.get_('keys.txt')
+        print("fans.json、urls.txt keys.txt 请勿删除！！！")
+        print(get_fans)
+    except Cnm as e:
+        if not get_fans:
+            runner.init_config()
+        print(e)
 
-    if fans_json:
-        print(fans_json)
-        c.get_data(driver=driver, url='https://www.douyin.com/user/self?from_tab_name=main')
+    # dh = DataHandle()
+    running_count = 0
+    print("运行指针:", running_count)
+    print(get_fans['head_url_for_urls'], get_urls[get_fans['head_url_for_urls_count']],
+          get_fans['head_url_for_urls_count'], get_fans['urls_total'])
+    print(get_fans['head_url_for_urls'] == get_urls[get_fans['head_url_for_urls_count']] and get_fans[
+        'head_url_for_urls_count'] <= get_fans['urls_total'])
+    while True:
+        # 没有fans.json
+        if get_fans['urls_total'] == 0:
+            l = c.get_log(driver, get_urls[running_count])
+            data = c.cap_data(driver, l)
+            print(data)
+
+        running_count += 1
+
+    driver.quit()
 
 
 if __name__ == '__main__':

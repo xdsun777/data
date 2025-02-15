@@ -256,9 +256,9 @@ if __name__ == '__main__':
             fans_component(driver=driver)
         else:
             print("fans.json文件不存在")
-            if os.path.isfile('url.txt'):
+            if os.path.isfile('urls.txt'):
                 driver = setup()
-                with open('url.txt', 'r', encoding='utf-8') as f:
+                with open('urls.txt', 'r', encoding='utf-8') as f:
                     urls = f.readlines()
                 for i, u in enumerate(urls):
                     print(u)

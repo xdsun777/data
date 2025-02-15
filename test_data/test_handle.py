@@ -11,7 +11,7 @@ def get_excel_file(dir='.'):
 def get_txt_file(dir='.'):
     if os.path.isdir(dir):
         return [os.path.join(dir, i) for i in os.listdir(dir) if
-                i.endswith('.txt') and i != 'key.txt' and i != 'url.txt']
+                i.endswith('.txt') and i != 'keys.txt' and i != 'urls.txt']
 
 
 def read(file) -> list:
@@ -33,8 +33,8 @@ def write(data_i: list, filename: str = './output/汇总.xlsx'):
 
 
 def filter_data(data_i: list) -> bool:
-    if os.path.isfile('key.txt'):
-        with open('key.txt', 'r', encoding='utf-8') as f:
+    if os.path.isfile('keys.txt'):
+        with open('keys.txt', 'r', encoding='utf-8') as f:
             keys = f.readlines()
         # s = ''.join([str(i) for i in data_i if i not in ['',True,False,None,'true','True','false','False','None']])
         try:
@@ -80,7 +80,7 @@ if __name__ == '__main__':
 
                 Js_t.insert(5, '')
                 # 筛选数据
-                if os.path.isfile('key.txt'):
+                if os.path.isfile('keys.txt'):
                     if filter_data(Js_t):
                         sht.append(Js_t)
                         temp.append(Js['uid'])
@@ -102,7 +102,7 @@ if __name__ == '__main__':
             #             Js_t.append(Js[n])
             #
             #         # 筛选数据
-            #         if os.path.isfile('key.txt'):
+            #         if os.path.isfile('keys.txt'):
             #             if filter_data(Js_t):
             #                 sht.append(Js_t)
             #                 temp.append(Js['uid'])
@@ -160,7 +160,7 @@ if __name__ == '__main__':
                         print(u)
 
                 # 筛选数据
-                if os.path.isfile('key.txt'):
+                if os.path.isfile('keys.txt'):
                     if filter_data(u):
                         temp.append(uid_count)
                         temp_data.append(u)
