@@ -314,7 +314,6 @@ def main():
     get_keys = None
     runner = RunnerConfig()
     c = Cap()
-    driver = c.setup()
     try:
         get_fans = runner.get_('fans.json')
         get_urls = runner.get_('urls.txt')
@@ -333,6 +332,7 @@ def main():
           get_fans['head_url_for_urls_count'], get_fans['urls_total'])
     print(get_fans['head_url_for_urls'] == get_urls[get_fans['head_url_for_urls_count']] and get_fans[
         'head_url_for_urls_count'] <= get_fans['urls_total'])
+    driver = c.setup()
     while True:
         # 没有fans.json
         if get_fans['urls_total'] == 0:
