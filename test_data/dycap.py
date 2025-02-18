@@ -39,14 +39,12 @@ class DataHandle:
         header_list = ['昵称', 'UID', '简介', 'SECUID', '抖音号','蓝V认证', '粉丝数', '关注', '隐私']
         if os.path.isfile(self.filename):
             wb = openpyxl.load_workbook(self.filename)
+            if 'fans' not in wb.sheetnames:
+                sht = wb.active
+                sht.title = 'fans'
             sht = wb['fans']
-            max_row = sht.max_row
-            max_col = sht.max_column
             for i in self.data:
                 sht.append(i)
-            # for i in range(1, max_col + 1, 1):
-            #     self.data[i - 1]
-            #     sht.cell(max_row + 1, i,self.data[i - 1])
             wb.save(self.filename)
         else:
             try:
