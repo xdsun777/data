@@ -42,7 +42,6 @@ def filter_data(data_i: list) -> bool:
         except TypeError:
             return False
         for i in keys:
-
             if i.strip('\n') in s:
                 return True
         else:
