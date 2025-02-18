@@ -332,11 +332,7 @@ def main():
     get_keys = []
     runner = RunnerConfig()
     c = Cap()
-<<<<<<< HEAD
-=======
     driver = c.setup()
-
->>>>>>> 85e0c3ce2ae7c279f0ccc46afe580d0d11286a6a
     try:
         get_fans = runner.get_('fans.json')
         get_urls = runner.get_('urls.txt')
@@ -351,18 +347,15 @@ def main():
 
     # dh = DataHandle()
     running_count = 0
-<<<<<<< HEAD
     print("运行指针:", running_count)
     print(get_fans['head_url_for_urls'], get_urls[get_fans['head_url_for_urls_count']],
           get_fans['head_url_for_urls_count'], get_fans['urls_total'])
     print(get_fans['head_url_for_urls'] == get_urls[get_fans['head_url_for_urls_count']] and get_fans[
         'head_url_for_urls_count'] <= get_fans['urls_total'])
     driver = c.setup()
-=======
     # print(get_fans['head_url_for_urls'], get_urls[get_fans['head_url_for_urls_count']],
     #       get_fans['head_url_for_urls_count'], get_fans['urls_total']    # print(get_fans['head_url_for_urls'], get_urls[get_fans['head_url_for_urls_count']],
     #       get_fans['head_url_for_urls_count'], get_fans['urls_total'])
->>>>>>> 85e0c3ce2ae7c279f0ccc46afe580d0d11286a6a
     while True:
         # 没有fans.json
         if get_fans['urls_total'] == 0 and running_count<len(get_urls):
