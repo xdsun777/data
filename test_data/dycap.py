@@ -25,18 +25,21 @@ class Cnm(Exception):
 
 # 数据处理
 class DataHandle:
-    def __init__(self, data: AnyStr = [list,str], filename: str = './output/汇总.xlsx'):
+    def __init__(self, data: AnyStr = [list, str], filename: str = './output/汇总.xlsx'):
         self.line_context = None
         self.data = data
         self.filename = filename
 
     def read_excl(self) -> list:
-        wb = load_workbook(self.filename)
-        sheet = wb.active
-        return [list(row) for row in sheet.iter_rows(values_only=True)]
+        try:
+            wb = load_workbook(self.filename)
+            sheet = wb.active
+            return [list(row) for row in sheet.iter_rows(values_only=True)]
+        except:
+            raise f"{self.filename}不存在"
 
     def write_excl(self):
-        header_list = ['昵称', 'UID', '简介', 'SECUID', '抖音号','蓝V认证', '粉丝数', '关注', '隐私']
+        header_list = ['昵称', 'UID', '简介', 'SECUID', '抖音号', '蓝V认证', '粉丝数', '关注', '隐私']
         if os.path.isfile(self.filename):
             wb = openpyxl.load_workbook(self.filename)
             if 'fans' not in wb.sheetnames:
@@ -66,50 +69,69 @@ class DataHandle:
                     self.line_context = [i.strip('\n') for i in f.readlines()]
                     return self.line_context
             except FileExistsError as e:
-                print(e)
-                return False
+                raise Cnm(f'{self.filename}:{e}')
         else:
-            raise Cnm(f'{self.filename}文件不存在')
+            return []
 
     def write_txt(self):
         with open(self.filename, 'w', encoding='utf-8') as f:
             f.write(self.data)
 
-    def is_already(self,file='./is_already.txt'):
+    def is_already(self, file='./is_already.txt'):
         url = self.data
         if os.path.isfile(file):
             with open(file, 'r', encoding='utf-8') as f:
                 al = [i.strip('\n') for i in f.readlines()]
         else:
-            al=[]
+            al = []
         if url in al:
             print(f"已抓取:{url} ")
             return True
         else:
             print(f"未抓取:{url}")
-            with open(file,'a',encoding='utf-8') as f:
-                f.write(url+'\n')
+            with open(file, 'a', encoding='utf-8') as f:
+                f.write(url + '\n')
             return False
-    def inspect_url(self):
-        # self.filename = './inspect_urls.txt'
-        url = self.data
-        # url = 'https://www.douyin.com/user/MS4wLjABAAAA1OkFdNuPB1hqdmEtQB26v2gs-SO-2wagJ8zGSggBOMk'
-        if os.path.isfile(self.filename):
-            with open(self.filename, 'r', encoding='utf-8') as f:
-                al = [i.strip('\n') for i in f.readlines()]
-        else:
-            al=[]
-        if url in al:
-            print(f"{url} 已存抓取")
-            return True
-        else:
-            print(f"{url} 未抓取")
-            al.append(url)
-            with open(self.filename,'a',encoding='utf-8') as f:
-                f.write(url+'\n')
-            return False
+
     def to_data(self):
         return [[d[i] for i in d.keys()] for d in self.data]
+
+    def filter_data(self,data_i: list) -> bool:
+        if os.path.isfile('keys.txt'):
+            with open('keys.txt','r',encoding='utf-8') as f:
+                keys = [i.strip('\n') for i in f.readlines()]
+            if keys == []:
+                return True
+            # s = ''.join([str(i) for i in data_i if i not in ['',True,False,None,'true','True','false','False','None']])
+            try:
+                s = ''.join([str(i) for i in data_i])
+            except TypeError:
+                return False
+            for i in keys:
+                if i.strip('\n') in s:
+                    return True
+            else:
+                return False
+        else:
+            print('没有key.txt文件,只会去重')
+            return True
+
+    def clean_data(self):
+        uid = []
+        datas = []
+        get_source_data = self.read_excl()
+        get_source_data.pop(0)
+        # 去重
+        for i in get_source_data:
+            print(i)
+            if i[1] not in uid and self.filter_data(i):
+                uid.append(i)
+                datas.append(i)
+                with open('./output/urls.txt','a',encoding='utf-8') as f:
+                    f.write(i[3]+'\n')
+        return datas
+
+
 # 运行配置
 class RunnerConfig:
     def __init__(self, config_file='./fans.json', urls_file='./urls.txt', key_file='./keys.txt'):
@@ -165,7 +187,7 @@ class RunnerConfig:
             elif f_name == 'urls.txt':
                 try:
                     with open(self.file_urls, 'r', encoding='utf-8') as f:
-                        self.runner_urls = [i.strip('\n') for i in f.readlines() if i !='\n']
+                        self.runner_urls = [i.strip('\n') for i in f.readlines() if i != '\n']
                         return self.runner_urls
                 except FileNotFoundError as e:
                     print(e)
@@ -173,7 +195,7 @@ class RunnerConfig:
             elif f_name == 'keys.txt':
                 try:
                     with open(file, 'r', encoding='utf-8') as f:
-                        self.runner_keys = [i.strip('\n') for i in f.readlines() if i !='\n']
+                        self.runner_keys = [i.strip('\n') for i in f.readlines() if i != '\n']
                         return self.runner_keys
                 except FileExistsError as e:
                     print(e)
@@ -374,25 +396,22 @@ def main():
     driver = c.setup()
     while True:
         # 没有fans.json
-        if get_fans['urls_total'] == 0 and running_count<len(get_urls):
-            print(f"抓取进度: {running_count+1}/{len(get_urls)}")
+        if get_fans['urls_total'] == 0 and running_count < len(get_urls):
+            print(f"抓取进度: {running_count + 1}/{len(get_urls)}")
             if DataHandle(data=get_urls[running_count], filename='./is_already.txt').is_already():
                 running_count += 1
                 continue
             else:
                 l = c.get_log(driver, get_urls[running_count])
                 data = c.cap_data(driver, l)
-                DataHandle(DataHandle(data).to_data()).write_excl()
-                # for d in data:
-                #     if DataHandle(d['sec_uid'], './inspect_urls.txt').inspect_url():
-                #         print("已经抓了")
-                #     else:
-                #         print(d)
+                DataHandle(DataHandle(data).to_data(), './output/result.xlsx').write_excl()
         else:
             break
         running_count += 1
-
     driver.quit()
+
+    print(f"{'*' * 10}")
+    DataHandle('',filename='./output/result.xlsx').clean_data()
 
 
 if __name__ == '__main__':
