@@ -1,4 +1,6 @@
 from pprint import pprint
+from time import sleep
+from typing import AnyStr
 
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.chrome.service import Service
@@ -23,7 +25,7 @@ class Cnm(Exception):
 
 # 数据处理
 class DataHandle:
-    def __init__(self, data: list = [], filename: str = './output/汇总.xlsx'):
+    def __init__(self, data: AnyStr = [list,str], filename: str = './output/汇总.xlsx'):
         self.line_context = None
         self.data = data
         self.filename = filename
@@ -34,14 +36,17 @@ class DataHandle:
         return [list(row) for row in sheet.iter_rows(values_only=True)]
 
     def write_excl(self):
-        header_list = ['昵称', 'UID', '简介', 'SECUID', '抖音号', '精准', '蓝V认证', '粉丝数', '关注', '隐私']
+        header_list = ['昵称', 'UID', '简介', 'SECUID', '抖音号','蓝V认证', '粉丝数', '关注', '隐私']
         if os.path.isfile(self.filename):
             wb = openpyxl.load_workbook(self.filename)
             sht = wb['fans']
             max_row = sht.max_row
             max_col = sht.max_column
-            for i in range(1, max_col + 1, 1):
-                sht.cell(max_row + 1, i).value = self.data[i - 1]
+            for i in self.data:
+                sht.append(i)
+            # for i in range(1, max_col + 1, 1):
+            #     self.data[i - 1]
+            #     sht.cell(max_row + 1, i,self.data[i - 1])
             wb.save(self.filename)
         else:
             try:
@@ -52,8 +57,8 @@ class DataHandle:
                 for i in self.data:
                     sht.append(i)
                 wb.save(self.filename)
-            except:
-                print("写入错误")
+            except Cnm as e:
+                print(f"错误{e}")
                 exit(0)
 
     def read_txt(self):
@@ -72,6 +77,21 @@ class DataHandle:
         with open(self.filename, 'w', encoding='utf-8') as f:
             f.write(self.data)
 
+    def is_already(self,file='./is_already.txt'):
+        url = self.data
+        if os.path.isfile(file):
+            with open(file, 'r', encoding='utf-8') as f:
+                al = [i.strip('\n') for i in f.readlines()]
+        else:
+            al=[]
+        if url in al:
+            print(f"已抓取:{url} ")
+            return True
+        else:
+            print(f"未抓取:{url}")
+            with open(file,'a',encoding='utf-8') as f:
+                f.write(url+'\n')
+            return False
     def inspect_url(self):
         # self.filename = './inspect_urls.txt'
         url = self.data
@@ -90,7 +110,8 @@ class DataHandle:
             with open(self.filename,'a',encoding='utf-8') as f:
                 f.write(url+'\n')
             return False
-
+    def to_data(self):
+        return [[d[i] for i in d.keys()] for d in self.data]
 # 运行配置
 class RunnerConfig:
     def __init__(self, config_file='./fans.json', urls_file='./urls.txt', key_file='./keys.txt'):
@@ -146,7 +167,7 @@ class RunnerConfig:
             elif f_name == 'urls.txt':
                 try:
                     with open(self.file_urls, 'r', encoding='utf-8') as f:
-                        self.runner_urls = [i.strip('\n') for i in f.readlines()]
+                        self.runner_urls = [i.strip('\n') for i in f.readlines() if i !='\n']
                         return self.runner_urls
                 except FileNotFoundError as e:
                     print(e)
@@ -154,7 +175,7 @@ class RunnerConfig:
             elif f_name == 'keys.txt':
                 try:
                     with open(file, 'r', encoding='utf-8') as f:
-                        self.runner_keys = [i.strip('\n') for i in f.readlines()]
+                        self.runner_keys = [i.strip('\n') for i in f.readlines() if i !='\n']
                         return self.runner_keys
                 except FileExistsError as e:
                     print(e)
@@ -192,7 +213,9 @@ class Cap:
         self.option.add_argument("--disable-extensions")
         self.option.add_argument("--enable-unsafe-swiftshader")
         self.option.add_argument("--disable-3d-apis")
-        # option.add_argument("--headless")  # 使用无头模式
+        self.option.add_argument("--disable-background-tasks")
+        self.option.add_argument("--disable-backgrounding-occluded-windows")
+        # self.option.add_argument("--headless")  # 使用无头模式
         # option.add_argument("start-maximized")  # 启动最大化窗口
         # option.add_argument("disable-infobars")
         # option.add_argument("--disable-background-network-ingestion")
@@ -309,7 +332,7 @@ class Cap:
                 else:
                     print("粉丝关注列表为空")
             except:
-                # 检测登录弹窗
+                # TODO 检测登录弹窗
                 if driver.find_elements(by=By.CLASS_NAME, value='login-pannel-appear-done') != []:
                     time.sleep(60)
                     print("请登录！")
@@ -319,20 +342,19 @@ class Cap:
                     driver.find_element(by=By.CLASS_NAME, value='vc-captcha-close-btn').click()
                 if c >= 2:
                     return driver.get_log('performance')
-                print(f"except:第{c}出错")
+                print(f"except:第{c}次出错")
                 c += 1
 
 
 def main():
     # 运行条件： fans.json   uls.txt  keys.txt
     # 优先运行fans.json,随后运行urls.txt,keys.txt用于过滤筛选数据
-    # if os.path.isfile('fans.json'):
     get_fans = {}
     get_urls = []
     get_keys = []
     runner = RunnerConfig()
     c = Cap()
-    driver = c.setup()
+
     try:
         get_fans = runner.get_('fans.json')
         get_urls = runner.get_('urls.txt')
@@ -345,32 +367,29 @@ def main():
             time.sleep(1)
         print(e)
 
-    # dh = DataHandle()
     running_count = 0
-    print("运行指针:", running_count)
-    print(get_fans['head_url_for_urls'], get_urls[get_fans['head_url_for_urls_count']],
-          get_fans['head_url_for_urls_count'], get_fans['urls_total'])
-    print(get_fans['head_url_for_urls'] == get_urls[get_fans['head_url_for_urls_count']] and get_fans[
-        'head_url_for_urls_count'] <= get_fans['urls_total'])
-    driver = c.setup()
+    print("运行初始化:", running_count)
     # print(get_fans['head_url_for_urls'], get_urls[get_fans['head_url_for_urls_count']],
-    #       get_fans['head_url_for_urls_count'], get_fans['urls_total']    # print(get_fans['head_url_for_urls'], get_urls[get_fans['head_url_for_urls_count']],
     #       get_fans['head_url_for_urls_count'], get_fans['urls_total'])
+    # print(get_fans['head_url_for_urls'] == get_urls[get_fans['head_url_for_urls_count']] and get_fans[
+    #     'head_url_for_urls_count'] <= get_fans['urls_total'])
+    driver = c.setup()
     while True:
         # 没有fans.json
         if get_fans['urls_total'] == 0 and running_count<len(get_urls):
-            print("运行指针:", running_count, )
-            if DataHandle(data=get_urls[running_count], filename='./inspect_urls.txt').inspect_url():
+            print(f"抓取进度: {running_count+1}/{len(get_urls)}")
+            if DataHandle(data=get_urls[running_count], filename='./is_already.txt').is_already():
                 running_count += 1
                 continue
             else:
                 l = c.get_log(driver, get_urls[running_count])
                 data = c.cap_data(driver, l)
-                for d in data:
-                    if DataHandle(d['sec_uid'], './inspect_urls.txt').inspect_url():
-                        print("已经抓了")
-                    else:
-                        print(d)
+                DataHandle(DataHandle(data).to_data()).write_excl()
+                # for d in data:
+                #     if DataHandle(d['sec_uid'], './inspect_urls.txt').inspect_url():
+                #         print("已经抓了")
+                #     else:
+                #         print(d)
         else:
             break
         running_count += 1
