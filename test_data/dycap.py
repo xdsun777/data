@@ -72,6 +72,24 @@ class DataHandle:
         with open(self.filename, 'w', encoding='utf-8') as f:
             f.write(self.data)
 
+    def inspect_url(self):
+        # self.filename = './inspect_urls.txt'
+        url = self.data
+        # url = 'https://www.douyin.com/user/MS4wLjABAAAA1OkFdNuPB1hqdmEtQB26v2gs-SO-2wagJ8zGSggBOMk'
+        if os.path.isfile(self.filename):
+            with open(self.filename, 'r', encoding='utf-8') as f:
+                al = [i.strip('\n') for i in f.readlines()]
+        else:
+            al=[]
+        if url in al:
+            print(f"{url} 已存抓取")
+            return True
+        else:
+            print(f"{url} 未抓取")
+            al.append(url)
+            with open(self.filename,'a',encoding='utf-8') as f:
+                f.write(url+'\n')
+            return False
 
 # 运行配置
 class RunnerConfig:
@@ -98,7 +116,7 @@ class RunnerConfig:
         try:
             with open('./fans.json', 'w', encoding='utf-8') as f:
                 f.write(json.dumps(self.config))
-                return True
+                return self.config
         except FileExistsError as e:
             print(e)
             return False
@@ -239,7 +257,7 @@ class Cap:
                                      "following_count": i['following_count']
                                      }
                         fans_list.append(user_info)
-        if fans_list:
+        if fans_list is not None:
             return fans_list
 
     # 获取网络日志
@@ -257,6 +275,7 @@ class Cap:
                         # 粉丝关注数量为0，就跳过
                         cap_data_total = int(i.text)
                         if cap_data_total == 0:
+                            print("粉丝关注为0，跳过！")
                             continue
                         i.click()
 
@@ -284,8 +303,7 @@ class Cap:
                                 break
                             # self.log += driver.get_log('performance')
                             # print(len(self.log))
-                        print("跳出_count循环")
-
+                        print(f"{driver.title}，跳出粉丝关注循环")
                         driver.find_element(by=By.CLASS_NAME, value='KArYflhI').click()
                     return driver.get_log('performance')
                 else:
@@ -301,19 +319,24 @@ class Cap:
                     driver.find_element(by=By.CLASS_NAME, value='vc-captcha-close-btn').click()
                 if c >= 2:
                     return driver.get_log('performance')
+                print(f"except:第{c}出错")
                 c += 1
-                print("except:。。。")
 
 
 def main():
     # 运行条件： fans.json   uls.txt  keys.txt
     # 优先运行fans.json,随后运行urls.txt,keys.txt用于过滤筛选数据
     # if os.path.isfile('fans.json'):
-    get_fans = None
-    get_urls = None
-    get_keys = None
+    get_fans = {}
+    get_urls = []
+    get_keys = []
     runner = RunnerConfig()
     c = Cap()
+<<<<<<< HEAD
+=======
+    driver = c.setup()
+
+>>>>>>> 85e0c3ce2ae7c279f0ccc46afe580d0d11286a6a
     try:
         get_fans = runner.get_('fans.json')
         get_urls = runner.get_('urls.txt')
@@ -323,23 +346,40 @@ def main():
     except Cnm as e:
         if not get_fans:
             runner.init_config()
+            time.sleep(1)
         print(e)
 
     # dh = DataHandle()
     running_count = 0
+<<<<<<< HEAD
     print("运行指针:", running_count)
     print(get_fans['head_url_for_urls'], get_urls[get_fans['head_url_for_urls_count']],
           get_fans['head_url_for_urls_count'], get_fans['urls_total'])
     print(get_fans['head_url_for_urls'] == get_urls[get_fans['head_url_for_urls_count']] and get_fans[
         'head_url_for_urls_count'] <= get_fans['urls_total'])
     driver = c.setup()
+=======
+    # print(get_fans['head_url_for_urls'], get_urls[get_fans['head_url_for_urls_count']],
+    #       get_fans['head_url_for_urls_count'], get_fans['urls_total']    # print(get_fans['head_url_for_urls'], get_urls[get_fans['head_url_for_urls_count']],
+    #       get_fans['head_url_for_urls_count'], get_fans['urls_total'])
+>>>>>>> 85e0c3ce2ae7c279f0ccc46afe580d0d11286a6a
     while True:
         # 没有fans.json
-        if get_fans['urls_total'] == 0:
-            l = c.get_log(driver, get_urls[running_count])
-            data = c.cap_data(driver, l)
-            print(data)
-
+        if get_fans['urls_total'] == 0 and running_count<len(get_urls):
+            print("运行指针:", running_count, )
+            if DataHandle(data=get_urls[running_count], filename='./inspect_urls.txt').inspect_url():
+                running_count += 1
+                continue
+            else:
+                l = c.get_log(driver, get_urls[running_count])
+                data = c.cap_data(driver, l)
+                for d in data:
+                    if DataHandle(d['sec_uid'], './inspect_urls.txt').inspect_url():
+                        print("已经抓了")
+                    else:
+                        print(d)
+        else:
+            break
         running_count += 1
 
     driver.quit()
