@@ -83,7 +83,7 @@ def fan_s():
 if __name__ == '__main__':
     start = time.time()
     # fan_s()
-    dy_live(input_files=r'C:\Users\ly\Desktop\work\source\ly直播采集\20250215直播间采集结果.xlsx')
+    dy_live(input_files=r'C:\Users\ly\Desktop\work\source\ly直播采集\20250218直播间采集结果.xlsx')
     # dy_live(input_files=r'C:\Users\ly\Desktop\work\source\ly直播采集\20250211直播间采集结果.xlsx', out_file='20250211直播数据.xlsx')
     # fensi(input_file='C:\\Users\\ly\\Desktop\\work\\source\\丁羽欣\\粉丝关注采集\\0110爱可生大型油烟机清洗维修培训评论采集结果.xlsx', form_user='丁羽欣')
     # pinglun(input_files="C:\\Users\\ly\\Desktop\\work\\source\\张伦\\视频评论采集\\20250114下陆区绿一源环保清洗经营部评论采集结果.xlsx",form='张伦')
