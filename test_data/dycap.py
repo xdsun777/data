@@ -333,7 +333,6 @@ def main():
     runner = RunnerConfig()
     c = Cap()
     driver = c.setup()
-
     try:
         get_fans = runner.get_('fans.json')
         get_urls = runner.get_('urls.txt')
@@ -348,6 +347,12 @@ def main():
 
     # dh = DataHandle()
     running_count = 0
+    print("运行指针:", running_count)
+    print(get_fans['head_url_for_urls'], get_urls[get_fans['head_url_for_urls_count']],
+          get_fans['head_url_for_urls_count'], get_fans['urls_total'])
+    print(get_fans['head_url_for_urls'] == get_urls[get_fans['head_url_for_urls_count']] and get_fans[
+        'head_url_for_urls_count'] <= get_fans['urls_total'])
+    driver = c.setup()
     # print(get_fans['head_url_for_urls'], get_urls[get_fans['head_url_for_urls_count']],
     #       get_fans['head_url_for_urls_count'], get_fans['urls_total']    # print(get_fans['head_url_for_urls'], get_urls[get_fans['head_url_for_urls_count']],
     #       get_fans['head_url_for_urls_count'], get_fans['urls_total'])
