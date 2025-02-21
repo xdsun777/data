@@ -388,11 +388,6 @@ def main():
         print(e)
 
     running_count = 0
-    print("运行初始化:", running_count)
-    # print(get_fans['head_url_for_urls'], get_urls[get_fans['head_url_for_urls_count']],
-    #       get_fans['head_url_for_urls_count'], get_fans['urls_total'])
-    # print(get_fans['head_url_for_urls'] == get_urls[get_fans['head_url_for_urls_count']] and get_fans[
-    #     'head_url_for_urls_count'] <= get_fans['urls_total'])
     driver = c.setup()
     while True:
         # 没有fans.json

@@ -1,3 +1,4 @@
+from IPython.core.formatters import JSONFormatter
 from openpyxl import Workbook, load_workbook
 import json
 import os
@@ -11,7 +12,7 @@ def get_excel_file(dir='.'):
 def get_txt_file(dir='.'):
     if os.path.isdir(dir):
         return [os.path.join(dir, i) for i in os.listdir(dir) if
-                i.endswith('.txt') and i != 'keys.txt' and i != 'urls.txt']
+                i.endswith('.txt') and i != 'keys.txt' and i != 'urls.txt' and i != 'key.txt' and i != 'url.txt']
 
 
 def read(file) -> list:
@@ -36,7 +37,6 @@ def filter_data(data_i: list) -> bool:
     if os.path.isfile('keys.txt'):
         with open('keys.txt', 'r', encoding='utf-8') as f:
             keys = f.readlines()
-        # s = ''.join([str(i) for i in data_i if i not in ['',True,False,None,'true','True','false','False','None']])
         try:
             s = ''.join([str(i) for i in data_i])
         except TypeError:
@@ -47,7 +47,7 @@ def filter_data(data_i: list) -> bool:
         else:
             return False
     else:
-        print('没有key.txt文件,不会筛选数据')
+        print('没有keys.txt文件,不会筛选数据')
         return False
 
 
@@ -58,6 +58,8 @@ if __name__ == '__main__':
     urls = []
     # 汇总
     result = []
+    result_urls = []
+
     for f in get_txt_file(r'.'):
         outfile = os.path.join('output', f)
         count = 0
@@ -71,54 +73,45 @@ if __name__ == '__main__':
             fsL = x.readlines()
             total = len(fsL)
         for i in fsL:
-            Js = json.loads(i)
-            if Js['uid'] not in temp:
-                Js_t = []
-                for n in Js.keys():
-                    Js_t.append(Js[n])
+            try:
+                Js = json.loads(i.strip())
+                if Js['uid'] not in temp:
+                    Js_t = []
+                    for n in Js.keys():
+                        Js_t.append(Js[n])
 
-                Js_t.insert(5, '')
-                # 筛选数据
-                if os.path.isfile('keys.txt'):
-                    if filter_data(Js_t):
+                    Js_t.insert(5, '')
+                    # 筛选数据
+                    if os.path.isfile('keys.txt'):
+                        if filter_data(Js_t):
+                            sht.append(Js_t)
+                            temp.append(Js['uid'])
+                            count += 1
+                            urls.append(Js['sec_uid'])
+                            result.append(Js_t)
+                            result_urls.append(Js['sec_uid'])
+                    else:
                         sht.append(Js_t)
                         temp.append(Js['uid'])
                         count += 1
                         urls.append(Js['sec_uid'])
                         result.append(Js_t)
-                else:
-                    sht.append(Js_t)
+                        result_urls.append(Js['sec_uid'])
                     temp.append(Js['uid'])
-                    count += 1
-                    urls.append(Js['sec_uid'])
-                    result.append(Js_t)
-                temp.append(Js['uid'])
-            # try:
-            #     Js = json.loads(i)
-            #     if Js['uid'] not in temp:
-            #         Js_t = []
-            #         for n in Js.keys():
-            #             Js_t.append(Js[n])
-            #
-            #         # 筛选数据
-            #         if os.path.isfile('keys.txt'):
-            #             if filter_data(Js_t):
-            #                 sht.append(Js_t)
-            #                 temp.append(Js['uid'])
-            #                 count += 1
-            #         else:
-            #             sht.append(Js_t)
-            #             temp.append(Js['uid'])
-            #             count += 1
-            #         temp.append(Js['uid'])
-            # except:
-            #     continue
+            except JSONFormatter as e:
+                print(f'{e}::::{i}')
         print(f"{f}已过滤，{count}/{total}")
         wb.save(outfile + '.xlsx')
         wb.close()
 
     if result:
         write(result)
+    if result_urls:
+        with open('./output/urls.txt', 'w') as f:
+            for i in set(urls):
+                f.write(i + "\n")
+        print(f'secuid已写入url.txt {len(urls)}条')
+
 
     for f in get_excel_file(r'.'):
         outfile = os.path.join('output', f)
