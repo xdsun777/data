@@ -3,6 +3,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.xlsx
+test_data/img/*
+
 # C extensions
 *.so
 *.db

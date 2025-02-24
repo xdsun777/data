@@ -281,7 +281,10 @@ class Cap:
                 # 关注
                 if 'user/following/list' in requestUrl:
                     requestId = params['requestId']
-                    response_body = driver.execute_cdp_cmd('Network.getResponseBody', {'requestId': requestId})
+                    try:
+                        response_body = driver.execute_cdp_cmd('Network.getResponseBody', {'requestId': requestId})
+                    except:
+                        continue
                     body_data = response_body["body"]
                     for i in json.loads(body_data)["followings"]:
                         is_biz_account = False
