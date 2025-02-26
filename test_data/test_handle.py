@@ -1,4 +1,3 @@
-from IPython.core.formatters import JSONFormatter
 from openpyxl import Workbook, load_workbook
 import json
 import os
@@ -98,8 +97,8 @@ if __name__ == '__main__':
                         result.append(Js_t)
                         result_urls.append(Js['sec_uid'])
                     temp.append(Js['uid'])
-            except JSONFormatter as e:
-                print(f'{e}::::{i}')
+            except:
+                print(f'错误::::{i}')
         print(f"{f}已过滤，{count}/{total}")
         wb.save(outfile + '.xlsx')
         wb.close()

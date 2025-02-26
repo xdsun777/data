@@ -1,0 +1,14 @@
+include source/chromedriver
+include source/chrome/*
+include source/chrome/locales/*
+include source/chrome/resources/*
+include source/chrome/resources/inspector_overlay/*
+include source/chrome/resources/accessibility/*
+include source/chrome/resources/accessibility/reading_mode_gdocs_helper/*
+include source/chrome/extensions/*
+include source/chrome/hyphen-data/*
+include source/chrome/MEIPreload/*
+include source/chrome/WidevineCdm/*
+include source/chrome/WidevineCdm/_platform_specific/*
+include source/chrome/WidevineCdm/_platform_specific/linux_x64/*
+include source/chrome/PrivacySandboxAttestationsPreloaded/*
