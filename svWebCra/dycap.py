@@ -13,6 +13,8 @@ from selenium.common import *
 import json, os, sys, time
 import openpyxl
 
+from svWebCra import __init__
+
 errors = [NoSuchElementException, ElementNotInteractableException]
 
 
@@ -243,8 +245,9 @@ class Cap:
         # option.add_argument(r'--disable-background-networking')
 
     def setup(self, browser='chrome'):
-        if browser == 'chrome':
-            return webdriver.Chrome(options=self.option, service=self.service)
+        # if browser == 'chrome':
+        #     return webdriver.Chrome(options=self.option, service=self.service)
+        return __init__()
 
     @staticmethod
     def teardown(driver):
