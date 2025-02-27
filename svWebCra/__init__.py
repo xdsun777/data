@@ -25,6 +25,7 @@ def __init__():
     else:
         option.binary_location = f'{os.path.join(source_path,"chrome/chrome.exe")}'
         service.executable_path = f'{os.path.join(source_path,"chromedriver.exe")}'
+    print(os.path.join(source_path,"cached_google"))
     option.add_argument(r'--disable-gpu-driver-bug-workarounds')
     option.add_argument(r'--no-default-browser-check')
     option.add_argument("--disable-gpu")  # 适用于 Linux 和 Windows 系统

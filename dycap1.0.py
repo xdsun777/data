@@ -1,7 +1,4 @@
-from pprint import pprint
-from time import sleep
 from typing import AnyStr
-
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.chrome.service import Service
 from openpyxl import Workbook, load_workbook
@@ -97,8 +94,8 @@ class DataHandle:
         return [[d[i] for i in d.keys()] for d in self.data]
 
     def filter_data(self,data_i: list) -> bool:
-        if os.path.isfile('keys.txt'):
-            with open('keys.txt','r',encoding='utf-8') as f:
+        if os.path.isfile('svWebCra/keys.txt'):
+            with open('svWebCra/keys.txt', 'r', encoding='utf-8') as f:
                 keys = [i.strip('\n') for i in f.readlines()]
             if keys == []:
                 return True
@@ -127,7 +124,7 @@ class DataHandle:
             if i[1] not in uid and self.filter_data(i):
                 uid.append(i)
                 datas.append(i)
-                with open('./output/urls.txt','a',encoding='utf-8') as f:
+                with open('svWebCra/output/urls.txt', 'a', encoding='utf-8') as f:
                     f.write(i[3]+'\n')
         return datas
 
@@ -149,13 +146,13 @@ class RunnerConfig:
         self.runner_urls = None
         self.runner_keys = None
 
-        if not os.path.isdir('./output'):
-            os.mkdir('./output')
+        if not os.path.isdir('svWebCra/output'):
+            os.mkdir('svWebCra/output')
         self.output = './output'
 
     def init_config(self):
         try:
-            with open('./fans.json', 'w', encoding='utf-8') as f:
+            with open('svWebCra/fans.json', 'w', encoding='utf-8') as f:
                 f.write(json.dumps(self.config))
                 return self.config
         except FileExistsError as e:
@@ -397,20 +394,23 @@ def main():
         # 没有fans.json
         if get_fans['urls_total'] == 0 and running_count < len(get_urls):
             print(f"抓取进度: {running_count + 1}/{len(get_urls)}")
-            if DataHandle(data=get_urls[running_count], filename='./is_already.txt').is_already():
+            if DataHandle(data=get_urls[running_count], filename='svWebCra/is_already.txt').is_already():
                 running_count += 1
                 continue
             else:
                 l = c.get_log(driver, get_urls[running_count])
                 data = c.cap_data(driver, l)
-                DataHandle(DataHandle(data).to_data(), './output/result.xlsx').write_excl()
+                DataHandle(DataHandle(data).to_data(), f"./output/{time.strftime('%Y%m%d')}result.xlsx").write_excl()
         else:
             break
         running_count += 1
     driver.quit()
 
     print(f"{'*' * 10}")
-    DataHandle('',filename='./output/result.xlsx').clean_data()
+    if not os.path.isdir('svWebCra/output/result'):
+        os.mkdir('svWebCra/output/result')
+    clean_data = DataHandle('',filename=f"./output/{time.strftime('%Y%m%d')}result.xlsx").clean_data()
+    DataHandle(clean_data, f'./output/result/{time.strftime("%Y%m%d")}汇总.xlsx').write_excl()
 
 
 if __name__ == '__main__':

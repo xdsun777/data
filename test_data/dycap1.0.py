@@ -1,5 +1,4 @@
 from typing import AnyStr
-
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.chrome.service import Service
 from openpyxl import Workbook, load_workbook
@@ -10,8 +9,6 @@ from selenium import webdriver
 from selenium.common import *
 import json, os, sys, time
 import openpyxl
-
-from svWebCra import __init__
 
 errors = [NoSuchElementException, ElementNotInteractableException]
 
@@ -77,7 +74,7 @@ class DataHandle:
         with open(self.filename, 'w', encoding='utf-8') as f:
             f.write(self.data)
 
-    def is_already(self, file='is_already.txt'):
+    def is_already(self, file='./is_already.txt'):
         url = self.data
         if os.path.isfile(file):
             with open(file, 'r', encoding='utf-8') as f:
@@ -123,11 +120,11 @@ class DataHandle:
         get_source_data.pop(0)
         # 去重
         for i in get_source_data:
-            # print(i)
+            print(i)
             if i[1] not in uid and self.filter_data(i):
                 uid.append(i)
                 datas.append(i)
-                with open('output/urls.txt','a',encoding='utf-8') as f:
+                with open('./output/urls.txt','a',encoding='utf-8') as f:
                     f.write(i[3]+'\n')
         return datas
 
@@ -243,9 +240,8 @@ class Cap:
         # option.add_argument(r'--disable-background-networking')
 
     def setup(self, browser='chrome'):
-        # if browser == 'chrome':
-        #     return webdriver.Chrome(options=self.option, service=self.service)
-        return __init__()
+        if browser == 'chrome':
+            return webdriver.Chrome(options=self.option, service=self.service)
 
     @staticmethod
     def teardown(driver):
@@ -411,11 +407,11 @@ def main():
     driver.quit()
 
     print(f"{'*' * 10}")
-
     if not os.path.isdir('output/result'):
         os.mkdir('output/result')
     clean_data = DataHandle('',filename=f"output/{time.strftime('%Y%m%d')}result.xlsx").clean_data()
     DataHandle(clean_data, f'output/result/{time.strftime("%Y%m%d")}汇总.xlsx').write_excl()
+
 
 if __name__ == '__main__':
     main()

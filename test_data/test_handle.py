@@ -1,6 +1,8 @@
+import sys
+import time
+
 from openpyxl import Workbook, load_workbook
-import json
-import os
+import json,os,re
 
 
 def get_excel_file(dir='.'):
@@ -20,7 +22,7 @@ def read(file) -> list:
     return [list(row) for row in sheet.iter_rows(values_only=True)]
 
 
-def write(data_i: list, filename: str = './output/汇总.xlsx'):
+def write(data_i: list, filename: str = 'output/汇总.xlsx'):
     try:
         wb = Workbook()
         sht = wb.active
@@ -29,15 +31,25 @@ def write(data_i: list, filename: str = './output/汇总.xlsx'):
         wb.save(filename)
     except:
         print("写入错误")
-        exit(0)
+        sys.exit(0)
 
 
 def filter_data(data_i: list) -> bool:
+    pattern = r'^(\+?86)?1[3-9]\d{9}$'
+    phone_pattern = re.compile(pattern)
+
     if os.path.isfile('keys.txt'):
         with open('keys.txt', 'r', encoding='utf-8') as f:
             keys = f.readlines()
         try:
             s = ''.join([str(i) for i in data_i])
+            # 提取手机号
+            phone = phone_pattern.match(data_i[2])
+            print("phone is? ",phone)
+            if phone:
+                data_i.append(phone.string)
+                write(data_i=data_i,filename=f'output/{time.strftime("%Y%m%D")}phone.xlsx')
+
         except TypeError:
             return False
         for i in keys:
@@ -52,6 +64,8 @@ def filter_data(data_i: list) -> bool:
 
 
 if __name__ == '__main__':
+
+
     if not os.path.isdir('output'):
         os.mkdir('output')
     urls = []
@@ -106,7 +120,7 @@ if __name__ == '__main__':
     if result:
         write(result)
     if result_urls:
-        with open('./output/urls.txt', 'w') as f:
+        with open('output/urls.txt', 'w') as f:
             for i in set(urls):
                 f.write(i + "\n")
         print(f'secuid已写入url.txt {len(urls)}条')
@@ -134,8 +148,8 @@ if __name__ == '__main__':
         temp = []
         temp_data = [title]
         for u in data:
-            if u['isyinsi'] == True:
-                continue
+            # if u['isyinsi'] == True:
+            #     continue
 
             if u[uid_count] not in temp:
                 # 去重后的数据处理
@@ -168,9 +182,9 @@ if __name__ == '__main__':
         print(f"{outfile}去重完毕:{len(temp)}/{total}")
 
     if urls:
-        with open('./output/url.txt', 'w') as f:
+        with open('output/url.txt', 'w') as f:
             for i in set(urls):
                 f.write(i + "\n")
         print(f'secuid已写入url.txt {len(urls)}条')
-    if os.path.isdir('./output') and os.listdir('./output') == []:
-        os.removedirs('./output')
+    if os.path.isdir('output') and os.listdir('output') == []:
+        os.removedirs('output')
